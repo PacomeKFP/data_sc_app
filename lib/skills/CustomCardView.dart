@@ -49,18 +49,13 @@ class CustomCardView {
                         fontWeight: FontWeight.bold,
                         color: Colors.blueAccent),
                   ),
-                  const SizedBox(
-                    height: 3
+                  const SizedBox(height: 3),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(description),
                   ),
-                  Text(description),
                 ])),
-                onTap: () {
-                  //Implementer diriger vers la page de presentation du cours
-                  //   Navigator.push(context,
-                  //     MaterialPageRoute<void>(builder: (context) {
-                  //   return MyHomePage();
-                  // }));
-                },
+                onTap: () {},
               )
             ],
           ),

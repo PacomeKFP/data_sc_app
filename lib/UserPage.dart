@@ -249,10 +249,10 @@ class _UserHomeState extends State<UserHome> {
         child: Text(
           message,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
               fontSize: 32,
               color: Colors.black12,
-              backgroundColor: Color.fromARGB(208, 255, 191, 0)),
+              backgroundColor: const Color.fromARGB(208, 255, 191, 0)),
         ),
       );
     }
@@ -263,7 +263,7 @@ class _UserHomeState extends State<UserHome> {
         * Ici on genere les données de la formation en se basant sur son id(formation_id)
          */
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Column(
           children: [Text(courseKeyToDisplay)],
         ));
@@ -291,6 +291,7 @@ class _UserHomeState extends State<UserHome> {
               var formations = snapshot.data![0]['formations'];
               return GridView.builder(
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    crossAxisSpacing: 25,
                     maxCrossAxisExtent: 400,
                   ),
                   itemCount: snapshot.data![0]['formations'].length,
@@ -303,9 +304,9 @@ class _UserHomeState extends State<UserHome> {
                         .cardview(buildContext);
                   });
             } else {
-              return Row(
+              return  Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [CircularProgressIndicator()],
+                children: const [CircularProgressIndicator()],
               );
             }
           }),
@@ -314,7 +315,7 @@ class _UserHomeState extends State<UserHome> {
 
   Widget Menu() {
     return Container(
-      padding: EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 10),
       child: Row(
         children: [
           _menuItem(
@@ -348,7 +349,7 @@ class _UserHomeState extends State<UserHome> {
     return Container(
         height: height,
         width: width,
-        color: Color.fromARGB(255, 211, 211, 211),
+        color: const Color.fromARGB(255, 211, 211, 211),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -365,60 +366,53 @@ class _UserHomeState extends State<UserHome> {
         ));
   }
 
+  double get w{
+    return width*0.3;
+  }
 
   Widget ProfileBar() {
     return Container(
-      padding: MediaQuery.of(context).size.width > 720
-          ? EdgeInsets.symmetric(horizontal: width / 8)
-          : EdgeInsets.symmetric(horizontal: 0),
+      height: height * 0.07,
       color: Colors.white,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Container(
-            height: height * 0.08,
-            child: Row(
-              children: [
-                Container(
-                  width: width * 0.3,
-                  child: TextField(
-                    autocorrect: true,
-                    controller: _userControllers['searchBar'],
-                    decoration: InputDecoration(
-                      hintText: 'Recherche',
-                      filled: true,
-                      fillColor: Color.fromARGB(127, 253, 253, 253),
-                      labelStyle: TextStyle(fontSize: 12),
-                      suffixIcon: IconButton(
-                          onPressed: () {
-                            makeSearch(_userControllers['searchBar']!.text);
-                          },
-                          icon: const Icon(Icons.search,
-                              color: Colors.blue, size: 14)),
-                    ),
-                  ),
+            child: Container(
+              width: w,
+              child: TextField(
+                autocorrect: true,
+                controller: _userControllers['searchBar'],
+                decoration: InputDecoration(
+                  hintText: 'Recherche',
+                  filled: true,
+                  fillColor: const Color.fromARGB(127, 253, 253, 253),
+                  labelStyle: const TextStyle(fontSize: 12),
+                  suffixIcon: IconButton(
+                      hoverColor: const Color.fromARGB(126, 208, 208, 240),
+                      onPressed: () {
+                        makeSearch(_userControllers['searchBar']!.text);
+                      },
+                      icon: const Icon(Icons.search,
+                          color: Colors.blue, size: 20)),
                 ),
-                
-              ],
+              ),
             ),
           ),
           Row(
             children: [
               Container(
-                height: height * 0.08,
                 child: IconButton(
-                  onPressed: () => {print("Deconnexion")},
-                  icon: Icon(Icons.logout_rounded),
+                  onPressed: () => {_logout()},
+                  icon: const Icon(Icons.logout_rounded),
                 ),
               ),
               Container(
                 height: height * .08,
-                // color: Colors.amber,
-
                 child: UserProfile(
-                    NameUser,
-                    "../assets/images/profil.jpeg",
-                    ), //prend user id en param
+                  NameUser,
+                  "../assets/images/profil.jpeg", width
+                ), //prend user id en param
               ),
             ],
           )
@@ -452,16 +446,16 @@ class _UserHomeState extends State<UserHome> {
               ),
             ),
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           isActive
               ? Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.deepPurple,
                     borderRadius: BorderRadius.circular(30),
                   ),
                 )
-              : SizedBox()
+              : const SizedBox()
         ],
       ),
     );

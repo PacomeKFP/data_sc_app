@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-
-Widget UserProfile(String name, String image) {
+Widget UserProfile(String name, String image, double width) {
   return Container(
     child: Row(children: [
       CircleAvatar(
@@ -10,10 +9,12 @@ Widget UserProfile(String name, String image) {
         radius: 20,
       ),
       const SizedBox(width: 10),
-      Text(
-        name,
-        style: const TextStyle(fontFamily: 'Gabriela', fontSize: 16),
-      )
+      width > 720
+          ? Text(
+              name,
+              style: const TextStyle(fontFamily: 'Gabriela', fontSize: 16),
+            )
+          : Wrap()
     ]),
   );
 }
@@ -28,5 +29,3 @@ Widget CircleImage(String path, int _radius) {
     ),
   );
 }
-
-
