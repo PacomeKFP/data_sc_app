@@ -7,54 +7,50 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'skills/Navigation.dart';
 import 'UserPage.dart';
-import 'mobile_ui/MobileMain.dart';
 
 //**
 //  CORRESPOND EGALEMENT A LA PAGE DE CONNEXION
 // */
 void main() async {
-    final prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
-    print(token);
-    runApp(
-        MaterialApp(
-            home: redirectAuth(token)
-            )
-        );
+  final prefs = await SharedPreferences.getInstance();
+  var token = prefs.getString('token');
+  print(token);
+  runApp(MaterialApp(home: redirectAuth(token)));
 }
 
-redirectAuth(token){
-    if(token == null) {
-        return MyApp();
-    } else {
-        _connectCurrentUser();
-        return UserHome();
-    }
+redirectAuth(token) {
+  if (token == null) {
+    return MyApp();
+  } else {
+    _connectCurrentUser();
+    return UserHome();
+  }
 }
+
 void _connectCurrentUser() async {
-        final prefs = await SharedPreferences.getInstance();
-        var data = { "email" : prefs.getString('email'), "password" : prefs.getString('password')  };
+  final prefs = await SharedPreferences.getInstance();
+  var data = {
+    "email": prefs.getString('email'),
+    "password": prefs.getString('password')
+  };
 
-        var res = await CallApi().AuthenticateUser(data);
-        var body = json.decode(res.body);
-        if (await body['status'] == 200) {
-        print('connecter');
-        } else {
-
-        print(body['message']);
-        }
-    }
+  var res = await CallApi().AuthenticateUser(data);
+  var body = json.decode(res.body);
+  if (await body['status'] == 200) {
+    print('connecter');
+  } else {
+    print(body['message']);
+  }
+}
 
 class MyApp extends StatefulWidget {
   MyAppState createState() => MyAppState();
 }
 
 class MyAppState extends State<MyApp> {
-
   @override
   Widget build(BuildContext context) {
-    _auth() async {
-  }
+    _auth() async {}
     return MaterialApp(
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(
@@ -70,8 +66,6 @@ class MyAppState extends State<MyApp> {
     );
   }
 }
-
-
 
 class MyAppView extends StatefulWidget {
   @override
@@ -133,12 +127,7 @@ class _MyAppViewState extends State<MyAppView> {
             invoker: invoker,
             pressFunction: _switchMenu,
           ).build(context),
-          // MediaQuery.of(context).size.width >= 980
-          //     ? Menu()
-          //     : SizedBox(), // Responsive
-          MediaQuery.of(context).size.width > 720
-              ? Body(context)
-              : MobileMainBody(),
+          Body(context)
         ],
       ),
     );
@@ -369,14 +358,13 @@ class _MyAppViewState extends State<MyAppView> {
               var password = _mainControllers['password']?.text;
 
               setState(() {
-                     loading_login = true;
+                loading_login = true;
               });
 
               var data = {"email": email, "password": password};
               SharedPreferences prefs = await SharedPreferences.getInstance();
               prefs.setString('password', data['password']!);
               _login(data, Context);
-
             },
             style: ElevatedButton.styleFrom(
               primary: Colors.blue,
@@ -385,7 +373,7 @@ class _MyAppViewState extends State<MyAppView> {
                 borderRadius: BorderRadius.circular(15),
               ),
             ),
-            child:  (loading_login)
+            child: (loading_login)
                 ? const SizedBox(
                     width: 16,
                     height: 16,
@@ -393,15 +381,14 @@ class _MyAppViewState extends State<MyAppView> {
                       color: Colors.white,
                       strokeWidth: 1.5,
                     ))
-                :Container(height: 50, child: Center(child: Text("Sign In"))),
+                : Container(height: 50, child: Center(child: Text("Sign In"))),
           ),
         ),
       ],
     );
   }
 
-
-  void _login(data,  context) async {
+  void _login(data, context) async {
     var res = await CallApi().AuthenticateUser(data);
     var body = json.decode(res.body);
     if (await body['status'] == 200) {
@@ -410,10 +397,10 @@ class _MyAppViewState extends State<MyAppView> {
       prefs.setString('name', body['user']['name']);
       prefs.setString('email', body['user']['email']);
       prefs.setString('phone', body['user']['phone']);
-      Navigator.push( context, MaterialPageRoute(builder: (context) => UserHome()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => UserHome()));
     } else {
       setState(() {
-
         errors = body['message'];
         loading_login = false;
       });

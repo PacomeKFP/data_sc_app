@@ -368,74 +368,60 @@ class _UserHomeState extends State<UserHome> {
 
   Widget ProfileBar() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: width / 8),
+      padding: MediaQuery.of(context).size.width > 720
+          ? EdgeInsets.symmetric(horizontal: width / 8)
+          : EdgeInsets.symmetric(horizontal: 0),
       color: Colors.white,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Expanded(
-            flex: 2,
-            child: Container(
-              height: height * 0.08,
-              child: Row(
-                children: [
-                  Container(
-                    width: width * 0.3,
-                    child: TextField(
-                      controller: _userControllers['searchBar'],
-                      decoration: InputDecoration(
-                        hintText: 'Recherche',
-                        filled: true,
-                        fillColor: Colors.blueGrey[50],
-                        labelStyle: TextStyle(fontSize: 12),
-                        contentPadding: EdgeInsets.only(left: 30),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.blueGrey),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.blueGrey),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
+          Container(
+            height: height * 0.08,
+            child: Row(
+              children: [
+                Container(
+                  width: width * 0.3,
+                  child: TextField(
+                    autocorrect: true,
+                    controller: _userControllers['searchBar'],
+                    decoration: InputDecoration(
+                      hintText: 'Recherche',
+                      filled: true,
+                      fillColor: Color.fromARGB(127, 253, 253, 253),
+                      labelStyle: TextStyle(fontSize: 12),
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            makeSearch(_userControllers['searchBar']!.text);
+                          },
+                          icon: const Icon(Icons.search,
+                              color: Colors.blue, size: 14)),
                     ),
                   ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        color: Colors.blue,
-                        child: IconButton(
-                            onPressed: () {
-                              makeSearch(_userControllers['searchBar']!.text);
-                            },
-                            icon: const Icon(Icons.search,
-                                color: Colors.white, size: 14)),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+                
+              ],
             ),
           ),
-          Expanded(
-              flex: 1,
-              child: Row(
-                children: [
-                  Container(
-                    height: height * 0.08,
-                    child: IconButton(
-                      onPressed: () => _logout(),
-                      icon: Icon(Icons.logout_rounded),
-                    ),
-                  ),
-                  Container(
-                    height: height * .08,
-                    // color: Colors.amber,
+          Row(
+            children: [
+              Container(
+                height: height * 0.08,
+                child: IconButton(
+                  onPressed: () => {print("Deconnexion")},
+                  icon: Icon(Icons.logout_rounded),
+                ),
+              ),
+              Container(
+                height: height * .08,
+                // color: Colors.amber,
 
-                    child: UserProfile(NameUser,
-                        "../assets/images/profil.jpg"), //prend user id en param
-                  ),
-                ],
-              ))
+                child: UserProfile(
+                    NameUser,
+                    "../assets/images/profil.jpeg",
+                    ), //prend user id en param
+              ),
+            ],
+          )
         ],
       ),
     );

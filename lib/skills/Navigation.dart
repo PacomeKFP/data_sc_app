@@ -1,5 +1,4 @@
 import 'package:data_sc_tester/main.dart';
-import 'package:data_sc_tester/mobile_ui/MobileInscription.dart';
 import 'package:flutter/material.dart';
 
 var change = true;
