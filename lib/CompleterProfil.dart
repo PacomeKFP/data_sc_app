@@ -1,4 +1,3 @@
-
 import 'package:data_sc_tester/GetStarted.dart';
 import 'package:flutter/material.dart';
 import 'skills/TextField.dart';
@@ -31,9 +30,6 @@ class LoginPage extends StatelessWidget {
             horizontal: MediaQuery.of(context).size.width / 8),
         children: [
           Head(),
-          // MediaQuery.of(context).size.width >= 980
-          //     ? Menu()
-          //     : SizedBox(), // Responsive
           Body()
         ],
       ),
@@ -70,16 +66,10 @@ final _profilControllers = {
   'last': TextEditingController(),
 };
 
-void dispose() {
-  _profilControllers['profession']?.dispose();
-  _profilControllers['experience']?.dispose();
-  _profilControllers['employeur']?.dispose();
-  _profilControllers['diplome']?.dispose();
-  _profilControllers['ecole']?.dispose();
-  _profilControllers['domaine']?.dispose();
-  _profilControllers['profession_visee']?.dispose();
-  _profilControllers['secteur']?.dispose();
-  _profilControllers['last']?.dispose();
+void dispose(Map<String, TextEditingController> map) {
+  map.forEach((key, value) {
+    map[key]?.dispose();
+  });
 }
 
 //=====================================================================
@@ -135,41 +125,41 @@ class Body extends StatelessWidget {
 //========================Boutton Sautter FIN=====================
             Container(width: 20, height: 20),
 
-
 //=========================Boutton CONTINUER=====================
 
             ElevatedButton(
               onPressed: () {
-                      //Form Submission !
+                //Form Submission !
 
-              //Form Submission !
+                //Form Submission !
 
-            //==================================================================
+                //==================================================================
 
-                bool isSubmitted =/** True in developpment */
+                bool isSubmitted = /** True in developpment */
                     true; //will take true if the form is well filled and submitted
-                  
-            //=================================================================
+
+                //=================================================================
 
                 //TODO: collecter  en envoyer les informations
-                var profession =_profilControllers['profession']?.text;
-                var experience =_profilControllers['experience']?.text;
-                var employeur =_profilControllers['employeur']?.text;
-                var diplome =_profilControllers['diplome']?.text;
-                var ecole =_profilControllers['ecole']?.text;
-                var domaine =_profilControllers['domaine']?.text;
-                var profession_visee = _profilControllers['profession_visee']?.text;
-                var secteur =_profilControllers['secteur']?.text;
-                var last =_profilControllers['last']?.text;
+                var profession = _profilControllers['profession']?.text;
+                var experience = _profilControllers['experience']?.text;
+                var employeur = _profilControllers['employeur']?.text;
+                var diplome = _profilControllers['diplome']?.text;
+                var ecole = _profilControllers['ecole']?.text;
+                var domaine = _profilControllers['domaine']?.text;
+                var profession_visee =
+                    _profilControllers['profession_visee']?.text;
+                var secteur = _profilControllers['secteur']?.text;
+                var last = _profilControllers['last']?.text;
 
                 if (isSubmitted == true) {
-                  dispose();
+                  dispose(_profilControllers);
                   print("Form Submitted well");
                   //go to next page
                   print(
-                    '$profession - $experience - $employeur - $diplome - $ecole - $domaine '+
-                    '-$profession_visee - $secteur -$last '
-                  );
+                      '$profession - $experience - $employeur - $diplome - $ecole - $domaine ' +
+                          '-$profession_visee - $secteur -$last ');
+
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => const GetStarted()));
                 }
@@ -177,7 +167,6 @@ class Body extends StatelessWidget {
               child: const Text('Continuer'),
             )
 //=========================Boutton Continuer FIN=====================
-
           ],
         )
       ],
@@ -194,42 +183,23 @@ Widget _voletInscription({
   TextEditingController? contro2,
   TextEditingController? contro3,
 }) {
-  CustomTextField TextField1 =
-      new CustomTextField(title: Champs1, placeholder: ' ');
-  CustomTextField TextField2 =
-      new CustomTextField(title: Champs2, placeholder: ' ');
-  CustomTextField TextField3 =
-      new CustomTextField(title: Champs3, placeholder: ' ');
-
-  return Container(
-    child: Column(
-      children: [
-        Row(
-          children: [Text(title, style: TextStyle(fontSize: 20))],
-        ),
-        SizedBox(height: 15),
-        Row(
-          children: [
-            Column(
-              children: [
-                IntrinsicWidth(child: TextField1.textFormField(txtController :contro1))
-              ],
-            ),
-            Spacer(flex: 1),
-            Column(
-              children: [
-                IntrinsicWidth(child: TextField2.textFormField(txtController :contro2))
-              ],
-            ),
-            Spacer(flex: 1),
-            Column(
-              children: [
-                IntrinsicWidth(child: TextField3.textFormField(txtController :contro3))
-              ],
-            ),
-          ],
-        ),
-      ],
-    ),
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(title, style: TextStyle(fontSize: 20)),
+      SizedBox(height: 15),
+      Wrap(
+        spacing: 2.0,
+        runSpacing: 10.0,
+        children: [
+          CustomTextField(title: Champs1, placeholder: ' ')
+              .textFormField(txtController: contro1),
+          CustomTextField(title: Champs2, placeholder: ' ')
+              .textFormField(txtController: contro2),
+          CustomTextField(title: Champs3, placeholder: ' ')
+              .textFormField(txtController: contro3),
+        ],
+      ),
+    ],
   );
 }

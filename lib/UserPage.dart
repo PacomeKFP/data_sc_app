@@ -2,19 +2,17 @@
 
 import 'dart:convert';
 
-import 'package:data_sc_tester/FormationClass.dart';
 import 'package:data_sc_tester/GetStarted.dart';
-import 'package:data_sc_tester/main.dart';
+import 'package:data_sc_tester/api/CallApi.dart';
 import 'package:data_sc_tester/skills/CustomCardView.dart';
 import 'package:data_sc_tester/skills/HomeFunctions.dart';
 import 'package:data_sc_tester/skills/HomeUserWidgets.dart';
 import 'package:data_sc_tester/skills/TabMenu.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 
-import 'api/CallApi.dart';
+import 'main.dart';
 
 void main() {
   runApp(const UserHome());
@@ -28,7 +26,33 @@ class UserHome extends StatefulWidget {
 }
 //==============CONTROLERS IMPLEMENTATION============================
 
-List<Map> DATA = [];
+List<Map> DATA = [
+  {
+    "title": "Data Analyst",
+    "description": "Ce module est tres important",
+    "image": "../../assets/images/3.jpg",
+  },
+  {
+    "title": "Data Mining",
+    "description": "Ce module est tres important",
+    "image": "../../assets/images/2.jpg",
+  },
+  {
+    "title": "Data Mining",
+    "description": "Ce module est tres important",
+    "image": "../../assets/images/1.jpg",
+  },
+  {
+    "title": "Data Mining",
+    "description": "Ce module est tres important",
+    "image": "../../assets/images/2.jpg",
+  },
+  {
+    "title": "Data Mining",
+    "description": "Ce module est tres important",
+    "image": "../../assets/images/3.jpg",
+  },
+];
 
 final _userControllers = {
   'searchBar': TextEditingController(),
@@ -40,62 +64,33 @@ void dispose() {
 
 double optionCardWidth = 800.0, optionCardSpacing = 10.0;
 
-Future<List<Formation>> fetchFormation() async {
-  final response = await http.get(
-      Uri.parse('https://elearning.togettechinov.com/app/public/formation'));
-
-  if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    var articles = <Formation>[];
-    articles = articles.map((model) => Formation.fromJson(model)).toList();
-    return articles;
-    // return Formation.fromJson(jsonDecode(response.body));
-  } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
-    throw Exception('Echec du chargement des Formations');
-  }
-}
-
 //=====================================================================
-class _UserHomeState extends State<UserHome> {
-  late Future<List<Formation>> formations;
-  var test;
 
+class _UserHomeState extends State<UserHome> {
   int index = 0;
-  var user;
+  var NameUser;
   double height = 0, width = 0;
   @override
   void initState() {
+    NameUser = '';
+    _getNameUser();
+    _all_formations();
     super.initState();
-    //print(formations.length);
-    formations = fetchFormation();
   }
 
-  Widget Test() {
-    return FutureBuilder<List<Formation>>(
-      future: formations,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          print("Snapshoot");
-          print(snapshot as String);
-          return Text(snapshot.data![0].titre);
-        } else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
-        }
-
-        // By default, show a loading spinner.
-        return const CircularProgressIndicator();
-      },
-    );
+  _getNameUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    var name = prefs.getString('name');
+    setState(() {
+      NameUser = name;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-    _getUser();
+
     return MaterialApp(
         theme: ThemeData(
           textTheme: GoogleFonts.poppinsTextTheme(
@@ -279,7 +274,7 @@ class _UserHomeState extends State<UserHome> {
   }
 
   Widget Lister(
-      {required BuildContext buildContext, String trainingType = "all"}) {
+      {required BuildContext buildContext, String trainingType = "all", data}) {
     /**On va d'abord faire une requette pour reccuperer les formations à afficher
      * Il faudra faire la recherche des données en fontion du trainingType:
      *  -all : toutes les formation, priorité au nouvelles  (page d'acceuil),
@@ -288,23 +283,33 @@ class _UserHomeState extends State<UserHome> {
      */
 
     return Container(
-        height: height * 0.88,
-        child: FutureBuilder<List<Formation>>(
-          future: formations,
+      height: height * 0.88,
+      child: FutureBuilder<List>(
+          future: _all_formations(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-
-              print("Snapshoot");
-              print(snapshot as String);
-              return Text(snapshot.data![0].titre);
-            } else if (snapshot.hasError) {
-              return Text('${snapshot.error}');
+              var formations = snapshot.data![0]['formations'];
+              return GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 400,
+                  ),
+                  itemCount: snapshot.data![0]['formations'].length,
+                  itemBuilder: (BuildContext ctx, index) {
+                    return CustomCardView(
+                            formation_id: 'form $index',
+                            title: formations[index]["titre"],
+                            description: formations[index]["debouches"],
+                            image: DATA[index]["image"])
+                        .cardview(buildContext);
+                  });
+            } else {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [CircularProgressIndicator()],
+              );
             }
-
-            // By default, show a loading spinner.
-            return const CircularProgressIndicator();
-          },
-        ));
+          }),
+    );
   }
 
   Widget Menu() {
@@ -345,7 +350,7 @@ class _UserHomeState extends State<UserHome> {
         width: width,
         color: Color.fromARGB(255, 211, 211, 211),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
@@ -360,44 +365,8 @@ class _UserHomeState extends State<UserHome> {
         ));
   }
 
-  Widget SecondBar() {
-    return Container(
-      padding: EdgeInsets.symmetric(
-          horizontal: width / 8, vertical: height * 0.1 / 6),
-      height: height * 0.15,
-      color: Colors.blue,
-      child: Row(children: [
-        Expanded(
-            child: Container(
-          alignment: Alignment.bottomLeft,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("Bienvenue !", style: TextStyle(fontSize: 26)),
-            ],
-          ),
-        )),
-        Expanded(
-            child: Container(
-                alignment: Alignment.topLeft,
-                padding: EdgeInsets.only(top: 0, left: width * .05, right: 0),
-                height: height * 0.4,
-                child: Container(
-                  color: Colors.white38,
-                )))
-      ]),
-    );
-  }
 
   Widget ProfileBar() {
-    var name;
-    _loadInformations() async {
-         SharedPreferences prefs = await SharedPreferences.getInstance();
-         setState(() {
-           name = prefs.getString('name');
-         });
-    }
     return Container(
       padding: EdgeInsets.symmetric(horizontal: width / 8),
       color: Colors.white,
@@ -453,17 +422,17 @@ class _UserHomeState extends State<UserHome> {
                 children: [
                   Container(
                     height: height * 0.08,
-                    child: OutlinedButton(
-                      onPressed: () => {print('logout')}, //_logout
-                      child: Text("Se deconnecter"),
+                    child: IconButton(
+                      onPressed: () => _logout(),
+                      icon: Icon(Icons.logout_rounded),
                     ),
                   ),
                   Container(
                     height: height * .08,
                     // color: Colors.amber,
 
-                    child: UserProfile(name,
-                        "../assets/images/profil.jpeg"), //prend user id en param
+                    child: UserProfile(NameUser,
+                        "../assets/images/profil.jpg"), //prend user id en param
                   ),
                 ],
               ))
@@ -511,31 +480,25 @@ class _UserHomeState extends State<UserHome> {
       ),
     );
   }
-  //===========================================================================================
-  //===========================================================================================
-  //===========================================================================================
 
-  _getUser() async {
-    var res = await CallApi().postData({}, 'user-auth-details');
+  _logout() async {
+    var res = await CallApi().UnAuthenticateUser();
     var body = json.decode(res.body);
-    print(body);
     if (await body['status'] == 200) {
-      setState(() {
-        user = body['user'];
-      });
-      print(user['user']);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.remove('token');
+      Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()));
+    } else {
+      print(body['message']);
     }
   }
 
-  _logout() async {
-    var res = await CallApi().postData({}, 'logout');
-    var body = json.decode(res.body);
-    print(body);
-    if (await body['status'] == 200) {
-      Navigator.push(
-          context, new MaterialPageRoute(builder: (context) => MyAppView()));
+  Future<List> _all_formations() async {
+    var res = await CallApi().getData('get-all-formations');
+    if (res.statusCode == 200) {
+      return [json.decode(res.body)];
     } else {
-      print('error');
+      return res.body['message'];
     }
   }
 }

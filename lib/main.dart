@@ -1,15 +1,12 @@
 import 'dart:convert';
 
-import 'package:data_sc_tester/GetStarted.dart';
 import 'package:data_sc_tester/api/CallApi.dart';
-import 'package:data_sc_tester/main.dart';
 import 'package:data_sc_tester/skills/TextField.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'CompleterProfil.dart';
 import 'skills/Navigation.dart';
-import 'pUserPage.dart';
+import 'UserPage.dart';
 import 'mobile_ui/MobileMain.dart';
 
 //**
