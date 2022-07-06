@@ -12,7 +12,7 @@ class Menu {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 30),
+      padding: EdgeInsets.only(top: 30, left: MediaQuery.of(context).size.width/32),
       child: Row(
         crossAxisAlignment: MediaQuery.of(context).size.width < 720
             ? CrossAxisAlignment.center

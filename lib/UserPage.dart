@@ -184,7 +184,7 @@ class _UserHomeState extends State<UserHome> {
         : "Formations $MesFormations";
 
     if (isEmpty) {
-      return Container(
+      return SizedBox(
         width: width * 7 / 8,
         height: height * 0.88,
         child: Row(
@@ -282,7 +282,7 @@ class _UserHomeState extends State<UserHome> {
      *  -fini/finished : pour les formations terminées
      */
 
-    return Container(
+    return SizedBox(
       height: height * 0.88,
       child: FutureBuilder<List>(
           future: _all_formations(),

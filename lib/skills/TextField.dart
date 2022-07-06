@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 
 class CustomTextField {
@@ -8,25 +10,27 @@ class CustomTextField {
     this.title = "",
     this.placeholder = "",
   });
-  textFormField({required TextEditingController? txtController, double Width = 300, bool obscure = false}) {
-    return Container(
-        width: Width,
+  textFormField({required TextEditingController? txtController, double width = 300, bool obscure = false,}) {
+    return SizedBox(
+        width: width,
         child: TextField(
+          
           obscureText: obscure,
           controller: txtController,
           decoration: InputDecoration(
-            hintText: this.placeholder,
+            // suffixIcon: IconButton(icon: Icon(Icons.visibility_outlined),)
+            hintText: placeholder,
             filled: true,
-            fillColor: Color.fromARGB(255, 250, 250, 255),
-            labelText: this.title,
-            labelStyle: TextStyle(fontSize: 12),
-            contentPadding: EdgeInsets.only(left: 30),
+            fillColor: const Color.fromARGB(255, 250, 250, 255),
+            labelText: title,
+            labelStyle:const TextStyle(fontSize: 12),
+            contentPadding:const  EdgeInsets.only(left: 30),
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.blueGrey),
+              borderSide:const BorderSide(color: Colors.blueGrey),
               borderRadius: BorderRadius.circular(15),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.blueGrey),
+              borderSide:const BorderSide(color: Colors.blueGrey),
               borderRadius: BorderRadius.circular(15),
             ),
           ),

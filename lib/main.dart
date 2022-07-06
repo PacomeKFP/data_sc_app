@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_typing_uninitialized_variables, non_constant_identifier_names, avoid_print, prefer_const_constructors, use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:data_sc_tester/api/CallApi.dart';
@@ -44,13 +46,14 @@ void _connectCurrentUser() async {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   MyAppState createState() => MyAppState();
 }
 
 class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    _auth() async {}
     return MaterialApp(
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(
@@ -58,7 +61,7 @@ class MyAppState extends State<MyApp> {
         ),
       ),
       title: 'Flutter Login Web',
-      home: Scaffold(
+      home: const Scaffold(
         backgroundColor: Color(0xFFf5f5f5),
         body: MyAppView(),
       ), //MyAppView() **En temps normal//*/*GetStarted
@@ -68,6 +71,8 @@ class MyAppState extends State<MyApp> {
 }
 
 class MyAppView extends StatefulWidget {
+  const MyAppView({Key? key}) : super(key: key);
+
   @override
   State<MyAppView> createState() => _MyAppViewState();
 }
@@ -83,7 +88,6 @@ class _MyAppViewState extends State<MyAppView> {
   }
 
   final _mainControllers = {
-    //Declarations
     'email': TextEditingController(),
     'password': TextEditingController(),
   };
@@ -97,13 +101,12 @@ class _MyAppViewState extends State<MyAppView> {
   };
 
   void dispose() {
-    _mainControllers['email']?.dispose();
-    _mainControllers['password']?.dispose();
-    _regControllers['name']?.dispose();
-    _regControllers['phone']?.dispose();
-    _regControllers['email']?.dispose();
-    _regControllers['password']?.dispose();
-    _regControllers['password_confirm']?.dispose();
+    _mainControllers.forEach((key, value) {
+      _mainControllers[key]?.dispose();
+    });
+    _regControllers.forEach((key, value) {
+      _regControllers[key]?.dispose();
+    });
   }
 
   var invoker = 'login';
@@ -116,12 +119,13 @@ class _MyAppViewState extends State<MyAppView> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: ListView(
-        padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.of(context).size.width / 8),
+        padding: EdgeInsets.only(
+            left: MediaQuery.of(context).size.width / 16,
+            right: MediaQuery.of(context).size.width / 16),
         children: [
           Menu(
             invoker: invoker,
@@ -132,28 +136,39 @@ class _MyAppViewState extends State<MyAppView> {
       ),
     );
   }
-  /*/**/* */
-
-  /***/ /* */
 
   Widget Body(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Wrap(
+      alignment: WrapAlignment.spaceAround,
+      direction: Axis.horizontal,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Container(
-          width: 360,
+        Padding(
+          padding: EdgeInsets.symmetric(
+              vertical: MediaQuery.of(context).size.height / 12),
+          child: SizedBox(
+            width: 300,
+            child: _formRegistration(context),
+          ),
+        ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width < 380
+              ? 12 * MediaQuery.of(context).size.width / 16
+              : 360,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'The African referential in Data Analysis',
+                'La réference Africaine en analyse des données ',
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
               const SizedBox(
                 height: 30,
               ),
-              const Text(
-                "If you don't have an account",
+              Text(
+                invoker == "login"
+                    ? "Si vous n'avez pas encore de compte"
+                    : "Si Vous avez déja un compte",
                 style: TextStyle(
                     color: Colors.black54, fontWeight: FontWeight.bold),
               ),
@@ -163,45 +178,28 @@ class _MyAppViewState extends State<MyAppView> {
               Row(
                 children: [
                   const Text(
-                    "You can",
+                    "Vous pouvez",
                     style: TextStyle(
                         color: Colors.black54, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(width: 15),
-                  GestureDetector(
-                    onTap: () {
-                      print(MediaQuery.of(context).size.width);
-                      //On devrait ajouter un evenement de click pour ouvrir _*inscription*_
-                      /*J'ajoute l'evenement en question*/
-                      _switchMenu('register');
-                    },
-                    child: const Text(
-                      "Register here!",
-                      style: TextStyle(
-                          color: Colors.blue, fontWeight: FontWeight.bold),
-                    ),
+                  TextButton(
+                    onPressed: () =>
+                        _switchMenu(invoker == "login" ? 'register' : "login"),
+                    child: Text(
+                        invoker == "login"
+                            ? "Vous Inscrire ici !"
+                            : "Vous Connecter ici !",
+                        style: TextStyle(
+                            color: Colors.blue, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
-              Image.asset(
-                'images/illustration-2.png',
-                width: 300,
-              ),
+              Image.asset('images/illustration-2.png', width: 300),
             ],
           ),
         ),
-        Image.asset(
-          'images/illustration-1.png',
-          width: 300,
-        ),
-        Padding(
-          padding: EdgeInsets.symmetric(
-              vertical: MediaQuery.of(context).size.height / 6),
-          child: Container(
-            width: 320,
-            child: _formRegistration(context),
-          ),
-        )
+        Image.asset('images/illustration-1.png', width: 300),
       ],
     );
   }
@@ -225,8 +223,8 @@ class _MyAppViewState extends State<MyAppView> {
               height: 50,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
             child: Text("Or continue with"),
           ),
           Expanded(
@@ -259,30 +257,25 @@ class _MyAppViewState extends State<MyAppView> {
         SizedBox(
           height: 30,
         ),
-        CustomTextField(title: 'Nom', placeholder: 'Nom').textFormField(
-          txtController: _regControllers['name'],
-        ),
+        CustomTextField(title: 'Nom', placeholder: 'Nom')
+            .textFormField(txtController: _regControllers['name']),
         SizedBox(height: 30),
         CustomTextField(title: 'Telephone', placeholder: 'Telephone')
             .textFormField(txtController: _regControllers['phone']),
         SizedBox(height: 30),
-        CustomTextField(title: 'Email', placeholder: 'Email').textFormField(
-          txtController: _regControllers['email'],
-        ),
+        CustomTextField(title: 'Email', placeholder: 'Email')
+            .textFormField(txtController: _regControllers['email']),
         SizedBox(height: 30),
         CustomTextField(title: 'Mot de passe', placeholder: 'Mot de passe')
             .textFormField(
-          obscure: true,
-          txtController: _regControllers['password'],
-        ),
+                obscure: true, txtController: _regControllers['password'] ),
         SizedBox(height: 30),
         CustomTextField(
                 title: 'Confirmer le mot de passe',
                 placeholder: 'Confirmer le mot de passe')
             .textFormField(
-          obscure: true,
-          txtController: _regControllers['password_confirm'],
-        ),
+                obscure: true,
+                txtController: _regControllers['password_confirm']),
         SizedBox(height: 40),
         //====================SUBMISSION BUTTON ==========================
         Container(
@@ -291,24 +284,14 @@ class _MyAppViewState extends State<MyAppView> {
             borderRadius: BorderRadius.circular(30),
           ),
           child: ElevatedButton(
-            child: Container(
-                width: double.infinity,
-                height: 50,
-                child: Center(child: Text("Sign Up"))),
             onPressed: () {
               //Form Submission Gestionner
-              var name = _regControllers['name']?.text;
-              var phone = _regControllers['phone']?.text;
-              var regEmail = _regControllers['email']?.text;
-              var regPassword = _regControllers['password']?.text;
-              var regPasswordConfirm =
-                  _regControllers['password_confirm']?.text;
               var data = {
-                'name': name,
-                'phone': phone,
-                'email': regEmail,
-                'password': regPassword,
-                'password_confirm': regPasswordConfirm
+                'name': _regControllers['name']?.text,
+                'phone': _regControllers['phone']?.text,
+                'email': _regControllers['email']?.text,
+                'password': _regControllers['password']?.text,
+                'password_confirm': _regControllers['password_confirm']?.text
               };
               _register(data, context);
             },
@@ -319,6 +302,10 @@ class _MyAppViewState extends State<MyAppView> {
                 borderRadius: BorderRadius.circular(15),
               ),
             ),
+            child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: Center(child: Text("Sign Up"))),
           ),
         ),
 
@@ -381,7 +368,7 @@ class _MyAppViewState extends State<MyAppView> {
                       color: Colors.white,
                       strokeWidth: 1.5,
                     ))
-                : Container(height: 50, child: Center(child: Text("Sign In"))),
+                : SizedBox(height: 50, child: Center(child: Text("Sign In"))),
           ),
         ),
       ],
@@ -393,6 +380,7 @@ class _MyAppViewState extends State<MyAppView> {
     var body = json.decode(res.body);
     if (await body['status'] == 200) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
+
       prefs.setString('token', body['token']);
       prefs.setString('name', body['user']['name']);
       prefs.setString('email', body['user']['email']);
@@ -447,6 +435,7 @@ class _MyAppViewState extends State<MyAppView> {
       decoration: isActive
           ? BoxDecoration(
               color: Colors.white,
+              // ignore: prefer_const_literals_to_create_immutables
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey,
@@ -466,6 +455,7 @@ class _MyAppViewState extends State<MyAppView> {
             ? BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(35),
+                // ignore: prefer_const_literals_to_create_immutables
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey,
@@ -476,7 +466,7 @@ class _MyAppViewState extends State<MyAppView> {
               )
             : BoxDecoration(),
         child: Image.asset(
-          '$image',
+          image,
           width: 35,
         ),
       )),
