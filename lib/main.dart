@@ -247,20 +247,26 @@ class _MyAppViewState extends State<MyAppView> {
     );
   }
 
+  Map<int, bool> obscure = {
+    //1:connextion; 2-inscription (pass), 3-inscription:(cnofirmaerpass)
+    1: true, 2: true, 3: true
+  };
+  void pass_obscurer(int index) {
+    print("object");
+    setState(() {
+      obscure[index] = obscure[index] == false ? true : false;
+    });
+  }
+
   Widget RegisterForm(BuildContext buildContext) {
     return Column(
       children: [
-        Text(
-          errors,
-          style: TextStyle(color: Colors.red),
-        ),
-        SizedBox(
-          height: 30,
-        ),
+        Text(errors, style: TextStyle(color: Colors.red)),
+        SizedBox(height: 30),
         CustomTextField(title: 'Nom', placeholder: 'Nom')
             .textFormField(txtController: _regControllers['name']),
         SizedBox(height: 30),
-        CustomTextField(title: 'Telephone', placeholder: 'Telephone')
+        CustomTextField(title: 'Téléphone', placeholder: 'Téléphone')
             .textFormField(txtController: _regControllers['phone']),
         SizedBox(height: 30),
         CustomTextField(title: 'Email', placeholder: 'Email')
@@ -268,13 +274,18 @@ class _MyAppViewState extends State<MyAppView> {
         SizedBox(height: 30),
         CustomTextField(title: 'Mot de passe', placeholder: 'Mot de passe')
             .textFormField(
-                obscure: true, txtController: _regControllers['password'] ),
+                hider: pass_obscurer,
+                index: 2,
+                obcurer: obscure,
+                txtController: _regControllers['password']),
         SizedBox(height: 30),
         CustomTextField(
                 title: 'Confirmer le mot de passe',
                 placeholder: 'Confirmer le mot de passe')
             .textFormField(
-                obscure: true,
+                hider: pass_obscurer,
+                index: 3,
+                obcurer: obscure,
                 txtController: _regControllers['password_confirm']),
         SizedBox(height: 40),
         //====================SUBMISSION BUTTON ==========================
@@ -303,9 +314,25 @@ class _MyAppViewState extends State<MyAppView> {
               ),
             ),
             child: SizedBox(
-                width: double.infinity,
                 height: 50,
-                child: Center(child: Text("Sign Up"))),
+                child:
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Container(
+                    margin: EdgeInsets.only(left: 36),
+                    child: const Text("S'inscrire'"),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 20),
+                    height: 16,
+                    width: 16,
+                    child: loading_login //Tu remplacera ici par le booléen de la fonction register !
+                        ? CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          )
+                        : Wrap(),
+                  )
+                ])),
           ),
         ),
 
@@ -323,12 +350,15 @@ class _MyAppViewState extends State<MyAppView> {
           txtController: _mainControllers['email'],
         ),
         SizedBox(height: 30),
-        CustomTextField(title: 'password', placeholder: 'password')
+        CustomTextField(title: 'Mot de Passe', placeholder: 'Mot de passe')
             .textFormField(
-                txtController: _mainControllers['password'], obscure: true),
+                txtController: _mainControllers['password'],
+                hider: pass_obscurer,
+                index: 1,
+                obcurer: obscure),
         TextButton(
             onPressed: () {
-              print("password forgotten");
+              print("Mot de passe oublié : Il faut gerer ça !");
             },
             child: Text("Mot de passe oublié ?")),
         SizedBox(height: 40),
@@ -360,15 +390,26 @@ class _MyAppViewState extends State<MyAppView> {
                 borderRadius: BorderRadius.circular(15),
               ),
             ),
-            child: (loading_login)
-                ? const SizedBox(
-                    width: 16,
+            child: SizedBox(
+                height: 50,
+                child:
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Container(
+                    margin: EdgeInsets.only(left: 36),
+                    child: const Text("Se Connecter"),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(left: 20),
                     height: 16,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 1.5,
-                    ))
-                : SizedBox(height: 50, child: Center(child: Text("Sign In"))),
+                    width: 16,
+                    child: loading_login
+                        ? CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          )
+                        : Wrap(),
+                  )
+                ])),
           ),
         ),
       ],

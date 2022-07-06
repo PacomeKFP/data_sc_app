@@ -12,7 +12,8 @@ class Menu {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 30, left: MediaQuery.of(context).size.width/32),
+      padding: EdgeInsets.only(
+          top: 30, left: MediaQuery.of(context).size.width / 32),
       child: Row(
         crossAxisAlignment: MediaQuery.of(context).size.width < 720
             ? CrossAxisAlignment.center
@@ -24,14 +25,14 @@ class Menu {
                 : MainAxisAlignment.end,
             children: [
               _menuItem(
-                  title: 'Sign In',
+                  title: 'Connexion',
                   isActive: invoker == "login" ? true : false,
-                  name:'login',
+                  name: 'login',
                   pressFunction: pressFunction),
               const SizedBox(width: 10),
               _menuItem(
-                  title: 'Sign Up',
-                  name :'register',
+                  title: 'Inscription',
+                  name: 'register',
                   isActive: invoker == "register" ? true : false,
                   pressFunction: pressFunction),
             ],
@@ -42,7 +43,8 @@ class Menu {
   }
 
   Widget _menuItem(
-      {String title = 'Title Menu',required String name,
+      {String title = 'Title Menu',
+      required String name,
       isActive = false,
       required void Function(String caller) pressFunction}) {
     return Padding(
@@ -56,32 +58,26 @@ class Menu {
                 textStyle: const TextStyle(),
               ),
               onPressed: () {
-                // if ((isActive == false))
-                //   Navigator.push(
-                //       cont, MaterialPageRoute(builder: (context) => Page));
-                
                 pressFunction(name);
               },
               child: Text(
-                '$title',
+                title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: isActive ? Colors.blue : Colors.grey,
                 ),
               ),
             ),
-            SizedBox(
-              height: 6,
-            ),
+            const SizedBox(height: 6),
             isActive
                 ? Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.deepPurple,
                       borderRadius: BorderRadius.circular(30),
                     ),
                   )
-                : SizedBox()
+                : Wrap()
           ],
         ),
       ),
