@@ -43,7 +43,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
   };
 
   //On extrait la liste des des cours contenus dans les données reccupérées
- /*
+  /*
   List courses = [
     {
       'cours_id': 'COURS_ML01',
@@ -83,7 +83,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
   /*
      Ici je cree les gestionnaire de check box en fontion des id de cours trouvés !
      */
-List courses = [];
+  List courses = [];
   Map<String, bool> CoursAchete = {};
   //a pratir de lui on pourra savoir quel cours a eté acheté ou pas
   //il sera utilisé directement pour l'achat
@@ -198,7 +198,7 @@ Commencer par les details de la formation même puis passer à ceux des cours   
           future: getCourses(widget.formation_id),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              courses.addAll(snapshot.data![0]['message'] ) ;
+              courses.addAll(snapshot.data![0]['message']);
               print(courses);
               return CoursesBloc(
                       courses: snapshot.data![0]['message'],
@@ -291,42 +291,7 @@ Commencer par les details de la formation même puis passer à ceux des cours   
   Widget FormationName(BuildContext context) {
     return Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
       ListTile(
-          title: Text(
-            formation['name'],
-            style: const TextStyle(fontSize: 24)0.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            3
-          ),
+          title: Text(formation['name'], style: const TextStyle(fontSize: 24)),
           subtitle: Text("Date de debut :${formation['start']}"),
           trailing: IconButton(
               icon: const Icon(Icons.add_shopping_cart_rounded),
@@ -337,3 +302,6 @@ Commencer par les details de la formation même puis passer à ceux des cours   
     ]);
   }
 }
+  
+
+  
