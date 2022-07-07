@@ -42,7 +42,6 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
     //Maintenant les données des cours de la formation
   };
 
-  
   List courses = [];
   Map<String, bool> CoursAchete = {};
   //a pratir de lui on pourra savoir quel cours a eté acheté ou pas
@@ -72,7 +71,9 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
         else
           for (Map<String, dynamic> course in courses)
             if (course['cours_id'] == key)
-              montantTotal += (course['montant'] as double);
+              montantTotal += (course['montant'].toString() == ""
+                  ? 0
+                  : (course['montant'] as double));
       });
       if (allBuyed)
 
@@ -82,7 +83,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
   }
 
   //================================
-  var a = "chien";
+
   Future<List> getCourses(data) async {
     var response = await CallApi()
         .postData(data, 'formation/${widget.formation_id}/cours');
@@ -205,7 +206,7 @@ Commencer par les details de la formation même puis passer à ceux des cours   
   void courseToDisplay(String key) {
     return setState(() {
       //mise à jour du cours à afficher, à presenter
-      courseKeyToDisplay = key;
+      courseKeyToDisplay = courseKeyToDisplay == key ? "" : key;
     });
   }
 

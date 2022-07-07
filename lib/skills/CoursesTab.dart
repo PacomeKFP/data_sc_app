@@ -44,7 +44,7 @@ class CoursesBloc {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      bloc('presentation', 1, courses.indexOf(course)),
+                      bloc('formation_id', 1, courses.indexOf(course)),
                       bloc('date_debut', 1, courses.indexOf(course)),
                     ],
                   )
