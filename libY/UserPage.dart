@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:data_sc_tester/GetStarted.dart';
 import 'package:data_sc_tester/api/CallApi.dart';
 import 'package:data_sc_tester/skills/CustomCardView.dart';
 import 'package:data_sc_tester/skills/HomeFunctions.dart';
@@ -81,9 +82,12 @@ class _UserHomeState extends State<UserHome> {
   _getNameUser() async {
     final prefs = await SharedPreferences.getInstance();
     var name = prefs.getString('name');
+    if(name != null) {
     setState(() {
       NameUser = name;
     });
+
+    }
   }
 
   @override
@@ -99,25 +103,23 @@ class _UserHomeState extends State<UserHome> {
         ),
         title: 'DATA SCIENCE PROJECT - UserHome',
         debugShowCheckedModeBanner: false,
-        home: SafeArea(
-          child: Scaffold(
-              body: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                  expandedHeight: height * 0.1,
-                  pinned: true,
-                  floating: true,
-                  elevation: 10,
-                  //expandedHeight: 250.0,
-                  flexibleSpace: Container(
-                    height: height * 0.12,
-                    width: double.infinity,
-                    child: ProfileBar(),
-                  )),
-              SliverList(delegate: SliverChildListDelegate(children())),
-            ],
-          )),
-        ));
+        home: Scaffold(
+            body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+                expandedHeight: height * 0.1,
+                pinned: true,
+                floating: true,
+                elevation: 10,
+                //expandedHeight: 250.0,
+                flexibleSpace: Container(
+                  height: height * 0.12,
+                  width: double.infinity,
+                  child: ProfileBar(),
+                )),
+            SliverList(delegate: SliverChildListDelegate(children())),
+          ],
+        )));
   }
 
   Widget Body(index, context) {
@@ -174,7 +176,6 @@ class _UserHomeState extends State<UserHome> {
   }
 
   Widget MesFormations(BuildContext context, int index) {
-    //index permettra de savoir si il s'agit des cours terminé ou pas encore !
     String MesFormations = index == 1 ? "En cours" : "Terminée";
 
     bool isEmpty = true; //pas de formations renvoye
@@ -187,7 +188,7 @@ class _UserHomeState extends State<UserHome> {
         : "Formations $MesFormations";
 
     if (isEmpty) {
-      return SizedBox(
+      return Container(
         width: width * 7 / 8,
         height: height * 0.88,
         child: Row(
@@ -252,10 +253,10 @@ class _UserHomeState extends State<UserHome> {
         child: Text(
           message,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
               fontSize: 32,
               color: Colors.black12,
-              backgroundColor: const Color.fromARGB(208, 255, 191, 0)),
+              backgroundColor: Color.fromARGB(208, 255, 191, 0)),
         ),
       );
     }
@@ -266,7 +267,7 @@ class _UserHomeState extends State<UserHome> {
         * Ici on genere les données de la formation en se basant sur son id(formation_id)
          */
     return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5),
+        padding: EdgeInsets.symmetric(horizontal: 5),
         child: Column(
           children: [Text(courseKeyToDisplay)],
         ));
@@ -275,8 +276,6 @@ class _UserHomeState extends State<UserHome> {
   Widget Acceuil(BuildContext context) {
     return Center(child: Lister(buildContext: context));
   }
-
-
 
   Widget Lister(
       {required BuildContext buildContext, String trainingType = "all", data}) {
@@ -287,7 +286,7 @@ class _UserHomeState extends State<UserHome> {
      *  -fini/finished : pour les formations terminées
      */
 
-    return SizedBox(
+    return Container(
       height: height * 0.88,
       child: FutureBuilder<List>(
           future: _all_formations(),
@@ -296,35 +295,38 @@ class _UserHomeState extends State<UserHome> {
               var formations = snapshot.data![0]['formations'];
               return GridView.builder(
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    crossAxisSpacing: 100,
                     maxCrossAxisExtent: 400,
                   ),
                   itemCount: snapshot.data![0]['formations'].length,
                   itemBuilder: (BuildContext ctx, index) {
                     return CustomCardView(
-                            formation_id: formations[index]["formation_id"],
+                            formation_id: 'form $index',
                             title: formations[index]["titre"],
                             description: formations[index]["debouches"],
-                            image: link_images+formations[index]["image"])
+                            
+                            image: link_images+formations[index]["image"],
+                            
+                            )
                         .cardview(buildContext);
                   });
             } else {
               return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [CircularProgressIndicator()],
+                children: [CircularProgressIndicator()],
               );
             }
           }),
     );
   }
+  
 
   Widget Menu() {
     return Container(
-      padding: const EdgeInsets.only(top: 10),
+      padding: EdgeInsets.only(top: 10),
       child: Row(
         children: [
           _menuItem(
-            title: "Page d'acceuil",
+            title: "Page d'Acceuil",
             isActive: index == 0 ? true : false,
             value: 0,
           ),
@@ -338,12 +340,6 @@ class _UserHomeState extends State<UserHome> {
             isActive: index == 2 ? true : false,
             value: 2,
           ),
-          SizedBox(
-                child: IconButton(
-                  onPressed: () => {_logout()},
-                  icon: const Icon(Icons.logout_rounded),
-                ),
-              ),
         ],
       ),
     );
@@ -360,15 +356,15 @@ class _UserHomeState extends State<UserHome> {
     return Container(
         height: height,
         width: width,
-        color: const Color.fromARGB(255, 211, 211, 211),
+        color: Color.fromARGB(255, 211, 211, 211),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
+                child: Menu(),
                 color: Colors.white,
-                padding: EdgeInsets.symmetric(horizontal: width / 8),
-                child: Menu()),
+                padding: EdgeInsets.symmetric(horizontal: width / 8)),
             const SizedBox(height: 10),
             Container(
               child: Body(index, context),
@@ -377,49 +373,77 @@ class _UserHomeState extends State<UserHome> {
         ));
   }
 
-  double get w {
-    return width > 600 ? width * 0.5 : width * 0.7;
-  }
 
   Widget ProfileBar() {
     return Container(
-      height: height * 0.07,
+      padding: EdgeInsets.symmetric(horizontal: width / 8),
       color: Colors.white,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Container(
+          Expanded(
+            flex: 2,
             child: Container(
-              width: w,
-              child: TextField(
-                autocorrect: true,
-                controller: _userControllers['searchBar'],
-                decoration: InputDecoration(
-                  hintText: 'Recherche',
-                  filled: true,
-                  fillColor: const Color.fromARGB(127, 253, 253, 253),
-                  labelStyle: const TextStyle(fontSize: 12),
-                  suffixIcon: IconButton(
-                      hoverColor: const Color.fromARGB(126, 208, 208, 240),
-                      onPressed: () {
-                        makeSearch(_userControllers['searchBar']!.text);
-                      },
-                      icon: const Icon(Icons.search,
-                          color: Colors.blue, size: 20)),
-                ),
+              height: height * 0.08,
+              child: Row(
+                children: [
+                  Container(
+                    width: width * 0.3,
+                    child: TextField(
+                      controller: _userControllers['searchBar'],
+                      decoration: InputDecoration(
+                        hintText: 'Recherche',
+                        filled: true,
+                        fillColor: Colors.blueGrey[50],
+                        labelStyle: TextStyle(fontSize: 12),
+                        contentPadding: EdgeInsets.only(left: 30),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.blueGrey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.blueGrey),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        color: Colors.blue,
+                        child: IconButton(
+                            onPressed: () {
+                              makeSearch(_userControllers['searchBar']!.text);
+                            },
+                            icon: const Icon(Icons.search,
+                                color: Colors.white, size: 14)),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
-          Row(
-            children: [
-              
-              Container(
-                height: height * .08,
-                child: UserProfile(NameUser, "../assets/images/profil.jpeg",
-                    width), //prend user id en param
-              ),
-            ],
-          )
+          Expanded(
+              flex: 1,
+              child: Row(
+                children: [
+                  Container(
+                    height: height * 0.08,
+                    child: IconButton(
+                      onPressed: () => _logout(),
+                      icon: Icon(Icons.logout_rounded),
+                    ),
+                  ),
+                  Container(
+                    height: height * .08,
+                    // color: Colors.amber,
+
+                    child: UserProfile(NameUser,
+                        "../assets/images/profil.jpg"), //prend user id en param
+                  ),
+                ],
+              ))
         ],
       ),
     );
@@ -431,14 +455,7 @@ class _UserHomeState extends State<UserHome> {
       cursor: SystemMouseCursors.click,
       child: Column(
         children: [
-          title == "Page d'acceuil" ?IconButton(onPressed:() {
-              if (isActive == false) {
-                setState(() {
-                  index = value;
-                });
-              }
-            } , icon:const Icon(Icons.house_outlined
-            ))  : TextButton(
+          TextButton(
             style: TextButton.styleFrom(
               textStyle: const TextStyle(),
             ),
@@ -457,17 +474,16 @@ class _UserHomeState extends State<UserHome> {
               ),
             ),
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6),
           isActive
               ? Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.deepPurple,
                     borderRadius: BorderRadius.circular(30),
                   ),
                 )
-              : const SizedBox()
+              : SizedBox()
         ],
       ),
     );
@@ -479,6 +495,9 @@ class _UserHomeState extends State<UserHome> {
     if (await body['status'] == 200) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.remove('token');
+      prefs.remove('name');
+      prefs.remove('email');
+      prefs.remove('phone');     
       Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()));
     } else {
       print(body['message']);
@@ -494,16 +513,3 @@ class _UserHomeState extends State<UserHome> {
     }
   }
 }
-
-/*
-
-Future<List> getCourses(data) async {
-    var response = await CallApi()
-        .postData(data, 'formation/${widget.formation_id}/cours');
-
-    return response.statusCode == 200
-        ? [json.decode(response.body)]
-        : response.body['message'];
-  }
-
-  */

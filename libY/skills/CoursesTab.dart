@@ -3,12 +3,13 @@
 import 'package:flutter/material.dart';
 
 class CoursesBloc {
-  List<dynamic> courses; //listes des cours avec leurs details
+  List<Map<String, dynamic>> courses; //listes des cours avec leurs details
   Function(String key) pressEvent;
+  Function() init;
   //object 0--> fleches; object 1--> box
 
   CoursesBloc(
-      {required this.courses, required this.pressEvent});
+      {required this.courses, required this.pressEvent, required this.init});
 
   Widget getCoursesBloc(
       {String inView = "" /*id du cours affiché*/,
@@ -17,11 +18,12 @@ class CoursesBloc {
       required Widget Function(String titleKey, int degree, int course_index)
           bloc}) {
 
+    init();//initialiser les checkbox !
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       for (Map<String, dynamic> course in courses)
         ListTile(
-            title: Text("${course['titre'].toString()} "),
+            title: Text("${course['name'].toString()} "),
             
             leading: IconButton(
                 onPressed: () => pressEvent(course['cours_id'].toString()),
@@ -44,8 +46,8 @@ class CoursesBloc {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      bloc('presentation', 1, courses.indexOf(course)),
-                      bloc('date_debut', 1, courses.indexOf(course)),
+                      bloc('description', 1, courses.indexOf(course)),
+                      bloc('price', 1, courses.indexOf(course)),
                     ],
                   )
                 : const SizedBox(width: 0, height: 0,)),

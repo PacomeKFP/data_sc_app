@@ -1,13 +1,8 @@
-// ignore_for_file: non_constant_identifier_names, curly_braces_in_flow_control_structures, avoid_print
-import 'dart:convert';
-import 'dart:io';
-
+// ignore_for_file: non_constant_identifier_names, curly_braces_in_flow_control_structures
 import 'package:data_sc_tester/UserPage.dart';
-import 'package:data_sc_tester/api/CallApi.dart';
 import 'package:data_sc_tester/skills/CoursesTab.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart';
 
 void main() {
   runApp(const PresentAndBuyFormation(formation_id: 'No formation Selected'));
@@ -17,7 +12,7 @@ double height = 0, width = 0;
 
 class PresentAndBuyFormation extends StatefulWidget {
   final String formation_id;
-  const PresentAndBuyFormation({Key? key, required this.formation_id})
+  const PresentAndBuyFormation({Key? key, this.formation_id = "ML01"})
       : super(key: key);
 
   @override
@@ -43,8 +38,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
   };
 
   //On extrait la liste des des cours contenus dans les données reccupérées
- /*
-  List courses = [
+  List<Map<String, dynamic>> courses = [
     {
       'cours_id': 'COURS_ML01',
       'name': 'Base de données',
@@ -75,7 +69,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
       'price': 23000
     }
   ];
-*/
+
   /*
       On peut utiliser uiliser une fonction asynchrone *getformation*, qui permettra de donner la valeurs de da
      */
@@ -83,7 +77,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
   /*
      Ici je cree les gestionnaire de check box en fontion des id de cours trouvés !
      */
-List courses = [];
+
   Map<String, bool> CoursAchete = {};
   //a pratir de lui on pourra savoir quel cours a eté acheté ou pas
   //il sera utilisé directement pour l'achat
@@ -122,35 +116,11 @@ List courses = [];
   }
 
   //================================
-  var a = "chien";
-  Future<List> getCourses(data) async {
-    var response = await CallApi()
-        .postData(data, 'formation/${widget.formation_id}/cours');
-
-    return response.statusCode == 200
-        ? [json.decode(response.body)]
-        : response.body['message'];
-  }
-
-  _test(data) async {
-    var response = await CallApi().getData('get-all-formations');
-    if (response.statusCode == 200) {}
-    print(json.decode(response.body));
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    updateMontantTotal();
-  }
 
   @override
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
-
-    print("Id de la formation ${widget.formation_id}\n\n");
     return MaterialApp(
         theme: ThemeData(
           textTheme: GoogleFonts.poppinsTextTheme(
@@ -170,47 +140,44 @@ List courses = [];
                 elevation: 10,
                 //expandedHeight: 250.0,
                 flexibleSpace: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  padding: EdgeInsets.symmetric(horizontal: width / 8),
                   height: height * 0.12,
                   width: double.infinity,
                   child: FormationName(context),
                 )),
             SliverList(
-                delegate: SliverChildListDelegate(DetailsFormation(
-                    formation_id: widget.formation_id, context: context))),
+                delegate: SliverChildListDelegate(
+                    DetailsFormation(formation_id: widget.formation_id))),
           ],
         )));
   }
 
-  List<Widget> DetailsFormation(
-      {required String formation_id, required BuildContext context}) {
+  List<Widget> DetailsFormation({required String formation_id}) {
     /**
 Commencer par les details de la formation même puis passer à ceux des cours    * 
      */
     return [
       //Elements descriptifs d'une formation
-
       _bloc('description', 0, -1), _bloc('debouche', 0, -1),
       _bloc('employeur', 0, -1),
 
       //On passe à present aux cours de la formation
-      FutureBuilder<List>(
-          future: getCourses(widget.formation_id),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              courses.addAll(snapshot.data![0]['message'] ) ;
-              print(courses);
-              return CoursesBloc(
-                      courses: snapshot.data![0]['message'],
-                      pressEvent: (String key) => courseToDisplay(key))
-                  .getCoursesBloc(
-                      changeTo: (String s, bool e) => courseMarketManager(s, e),
-                      inView: courseKeyToDisplay,
-                      bloc: _bloc,
-                      box: CoursAchete);
-            }
-            return const CircularProgressIndicator.adaptive();
-          }),
+      CoursesBloc(
+              courses: courses,
+              pressEvent: (String key) => setState(() {
+                    //mise à jour du cours à afficher, à presenter
+                    courseKeyToDisplay = key;
+                  }),
+              init: updateMontantTotal)
+          .getCoursesBloc(
+              changeTo: (String s, bool e) => setState(() {
+                    //mise à jour la liste des cours à acheter, et du montant à payer
+                    CoursAchete[s] = e;
+                    updateMontantTotal();
+                  }),
+              inView: courseKeyToDisplay,
+              bloc: _bloc,
+              box: CoursAchete),
 
       //Boutton de souscripttion avec prix total à payer !
       Row(
@@ -220,27 +187,12 @@ Commencer par les details de la formation même puis passer à ceux des cours   
           Text("Prix total : ${montantTotal}F"),
           const SizedBox(width: 1),
           OutlinedButton.icon(
-              onPressed: () => print("buy Courses $CoursAchete"),
+              onPressed: () => print("buy Courses ${CoursAchete}"),
               icon: const Icon(Icons.add_shopping_cart_rounded),
               label: const Text("Finaliser l'achat !"))
         ],
       )
     ];
-  }
-
-  void courseMarketManager(String s, bool e) {
-    return setState(() {
-      //mise à jour la liste des cours à acheter, et du montant à payer
-      CoursAchete[s] = e;
-      updateMontantTotal();
-    });
-  }
-
-  void courseToDisplay(String key) {
-    return setState(() {
-      //mise à jour du cours à afficher, à presenter
-      courseKeyToDisplay = key;
-    });
   }
 
 //=======================================================================================================================================
@@ -293,39 +245,7 @@ Commencer par les details de la formation même puis passer à ceux des cours   
       ListTile(
           title: Text(
             formation['name'],
-            style: const TextStyle(fontSize: 24)0.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            3
+            style: const TextStyle(fontSize: 24),
           ),
           subtitle: Text("Date de debut :${formation['start']}"),
           trailing: IconButton(

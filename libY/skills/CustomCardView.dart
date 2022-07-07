@@ -1,5 +1,3 @@
-// ignore_for_file: non_constant_identifier_names
-
 import 'package:flutter/material.dart';
 import '../Presentation.dart';
 
@@ -33,8 +31,7 @@ class CustomCardView {
                         color: Colors.blueAccent),
                   ),
                   const SizedBox(height: 3),
-                  Image.network(image,
-                      width: 150, height: 150, fit: BoxFit.fill),
+                  Image.network(image, width: 150, height: 150, fit: BoxFit.fill),
                   const SizedBox(height: 3),
                   ElevatedButton(
                       onPressed: () {
@@ -52,15 +49,18 @@ class CustomCardView {
                         fontWeight: FontWeight.bold,
                         color: Colors.blueAccent),
                   ),
-                  const SizedBox(height: 3),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 40),
-                    child: Text(description.substring(
-                        0, description.length < 40 ? description.length : 40)),
+                  const SizedBox(
+                    height: 3
                   ),
+                  Text(description),
                 ])),
-                onTap: () {},
+                onTap: () {
+                  //Implementer diriger vers la page de presentation du cours
+                  //   Navigator.push(context,
+                  //     MaterialPageRoute<void>(builder: (context) {
+                  //   return MyHomePage();
+                  // }));
+                },
               )
             ],
           ),

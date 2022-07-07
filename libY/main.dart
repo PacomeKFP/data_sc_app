@@ -1,60 +1,49 @@
-// ignore_for_file: prefer_typing_uninitialized_variables, non_constant_identifier_names, avoid_print, prefer_const_constructors, use_build_context_synchronously
-
 import 'dart:convert';
 
-import 'package:data_sc_tester/CompleterProfil.dart';
 import 'package:data_sc_tester/api/CallApi.dart';
 import 'package:data_sc_tester/skills/TextField.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'CompleterProfil.dart';
 import 'skills/Navigation.dart';
 import 'UserPage.dart';
+import 'mobile_ui/MobileMain.dart';
 
 //**
 //  CORRESPOND EGALEMENT A LA PAGE DE CONNEXION
 // */
 void main() async {
-  final prefs = await SharedPreferences.getInstance();
-  var token = prefs.getString('token');
-  print(token);
-  runApp(MaterialApp(home: redirectAuth(token)));
+    final prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token');
+    print(token);
+    runApp(
+        MaterialApp(
+            home: redirectAuth(token)
+            )
+        );
 }
 
-redirectAuth(token) {
-  if (token == null) {
-    return MyApp();
-  } else {
-    _connectCurrentUser();
-    return UserHome();
-  }
-}
-
-void _connectCurrentUser() async {
-  final prefs = await SharedPreferences.getInstance();
-  var data = {
-    "email": prefs.getString('email'),
-    "password": prefs.getString('password')
-  };
-
-  var res = await CallApi().AuthenticateUser(data);
-  var body = json.decode(res.body);
-  if (await body['status'] == 200) {
-    print('connecter');
-  } else {
-    print(body['message']);
-  }
+redirectAuth(token){
+    if(token == null) {
+      
+        return MyApp();
+    } else {
+      print('token');
+        return UserHome();
+    }
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
-
   MyAppState createState() => MyAppState();
 }
 
 class MyAppState extends State<MyApp> {
+
   @override
   Widget build(BuildContext context) {
+    _auth() async {
+  }
     return MaterialApp(
       theme: ThemeData(
         textTheme: GoogleFonts.poppinsTextTheme(
@@ -62,34 +51,34 @@ class MyAppState extends State<MyApp> {
         ),
       ),
       title: 'Flutter Login Web',
-      home: const Scaffold(
+      home: Scaffold(
         backgroundColor: Color(0xFFf5f5f5),
         body: MyAppView(),
-      ), //MyAppView() **En temps normal//*/*InscriptionPage
+      ), //MyAppView() **En temps normal//*/*GetStarted
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class MyAppView extends StatefulWidget {
-  const MyAppView({Key? key}) : super(key: key);
 
+
+class MyAppView extends StatefulWidget {
   @override
   State<MyAppView> createState() => _MyAppViewState();
 }
 
 class _MyAppViewState extends State<MyAppView> {
   var errors;
-  var loading_login, loading_register;
+  var loading_login;
   @override
   void initState() {
     super.initState();
     errors = ' ';
     loading_login = false;
-    loading_register = false;
   }
 
   final _mainControllers = {
+    //Declarations
     'email': TextEditingController(),
     'password': TextEditingController(),
   };
@@ -103,12 +92,13 @@ class _MyAppViewState extends State<MyAppView> {
   };
 
   void dispose() {
-    _mainControllers.forEach((key, value) {
-      _mainControllers[key]?.dispose();
-    });
-    _regControllers.forEach((key, value) {
-      _regControllers[key]?.dispose();
-    });
+    _mainControllers['email']?.dispose();
+    _mainControllers['password']?.dispose();
+    _regControllers['name']?.dispose();
+    _regControllers['phone']?.dispose();
+    _regControllers['email']?.dispose();
+    _regControllers['password']?.dispose();
+    _regControllers['password_confirm']?.dispose();
   }
 
   var invoker = 'login';
@@ -121,56 +111,49 @@ class _MyAppViewState extends State<MyAppView> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: ListView(
-        padding: EdgeInsets.only(
-            left: MediaQuery.of(context).size.width / 16,
-            right: MediaQuery.of(context).size.width / 16),
+        padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width / 8),
         children: [
           Menu(
             invoker: invoker,
             pressFunction: _switchMenu,
           ).build(context),
-          Body(context)
+          // MediaQuery.of(context).size.width >= 980
+          //     ? Menu()
+          //     : SizedBox(), // Responsive
+          MediaQuery.of(context).size.width > 720
+              ? Body(context)
+              : MobileMainBody(),
         ],
       ),
     );
   }
+  /*/**/* */
+
+  /***/ /* */
 
   Widget Body(BuildContext context) {
-    return Wrap(
-      alignment: WrapAlignment.spaceAround,
-      direction: Axis.horizontal,
-      crossAxisAlignment: WrapCrossAlignment.center,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Padding(
-          padding: EdgeInsets.symmetric(
-              vertical: MediaQuery.of(context).size.height / 12),
-          child: SizedBox(
-            width: 300,
-            child: _formRegistration(context),
-          ),
-        ),
-        SizedBox(
-          width: MediaQuery.of(context).size.width < 380
-              ? 12 * MediaQuery.of(context).size.width / 16
-              : 360,
+        Container(
+          width: 360,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'La réference Africaine en analyse des données ',
+                'The African referential in Data Analysis',
                 style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
               ),
               const SizedBox(
                 height: 30,
               ),
-              Text(
-                invoker == "login"
-                    ? "Si vous n'avez pas encore de compte"
-                    : "Si Vous avez déja un compte",
+              const Text(
+                "If you don't have an account",
                 style: TextStyle(
                     color: Colors.black54, fontWeight: FontWeight.bold),
               ),
@@ -180,28 +163,45 @@ class _MyAppViewState extends State<MyAppView> {
               Row(
                 children: [
                   const Text(
-                    "Vous pouvez",
+                    "You can",
                     style: TextStyle(
                         color: Colors.black54, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(width: 15),
-                  TextButton(
-                    onPressed: () =>
-                        _switchMenu(invoker == "login" ? 'register' : "login"),
-                    child: Text(
-                        invoker == "login"
-                            ? "Vous Inscrire ici !"
-                            : "Vous Connecter ici !",
-                        style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold)),
+                  GestureDetector(
+                    onTap: () {
+                      print(MediaQuery.of(context).size.width);
+                      //On devrait ajouter un evenement de click pour ouvrir _*inscription*_
+                      /*J'ajoute l'evenement en question*/
+                      _switchMenu('register');
+                    },
+                    child: const Text(
+                      "Register here!",
+                      style: TextStyle(
+                          color: Colors.blue, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
-              Image.asset('images/illustration-2.png', width: 300),
+              Image.asset(
+                'images/illustration-2.png',
+                width: 300,
+              ),
             ],
           ),
         ),
-        Image.asset('images/illustration-1.png', width: 300),
+        Image.asset(
+          'images/illustration-1.png',
+          width: 300,
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(
+              vertical: MediaQuery.of(context).size.height / 6),
+          child: Container(
+            width: 320,
+            child: _formRegistration(context),
+          ),
+        )
       ],
     );
   }
@@ -225,8 +225,8 @@ class _MyAppViewState extends State<MyAppView> {
               height: 50,
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text("Or continue with"),
           ),
           Expanded(
@@ -249,46 +249,40 @@ class _MyAppViewState extends State<MyAppView> {
     );
   }
 
-  Map<int, bool> obscure = {
-    //1:connextion; 2-inscription (pass), 3-inscription:(cnofirmaerpass)
-    1: true, 2: true, 3: true
-  };
-  void pass_obscurer(int index) {
-    print("object");
-    setState(() {
-      obscure[index] = obscure[index] == false ? true : false;
-    });
-  }
-
   Widget RegisterForm(BuildContext buildContext) {
     return Column(
       children: [
-        Text(errors, style: TextStyle(color: Colors.red)),
+        Text(
+          errors,
+          style: TextStyle(color: Colors.red),
+        ),
+        SizedBox(
+          height: 30,
+        ),
+        CustomTextField(title: 'Nom', placeholder: 'Nom').textFormField(
+          txtController: _regControllers['name'],
+        ),
         SizedBox(height: 30),
-        CustomTextField(title: 'Nom', placeholder: 'Nom')
-            .textFormField(txtController: _regControllers['name']),
-        SizedBox(height: 30),
-        CustomTextField(title: 'Téléphone', placeholder: 'Téléphone')
+        CustomTextField(title: 'Telephone', placeholder: 'Telephone')
             .textFormField(txtController: _regControllers['phone']),
         SizedBox(height: 30),
-        CustomTextField(title: 'Email', placeholder: 'Email')
-            .textFormField(txtController: _regControllers['email']),
+        CustomTextField(title: 'Email', placeholder: 'Email').textFormField(
+          txtController: _regControllers['email'],
+        ),
         SizedBox(height: 30),
         CustomTextField(title: 'Mot de passe', placeholder: 'Mot de passe')
             .textFormField(
-                hider: pass_obscurer,
-                index: 2,
-                obcurer: obscure,
-                txtController: _regControllers['password']),
+          obscure: true,
+          txtController: _regControllers['password'],
+        ),
         SizedBox(height: 30),
         CustomTextField(
                 title: 'Confirmer le mot de passe',
                 placeholder: 'Confirmer le mot de passe')
             .textFormField(
-                hider: pass_obscurer,
-                index: 3,
-                obcurer: obscure,
-                txtController: _regControllers['password_confirm']),
+          obscure: true,
+          txtController: _regControllers['password_confirm'],
+        ),
         SizedBox(height: 40),
         //====================SUBMISSION BUTTON ==========================
         Container(
@@ -297,18 +291,25 @@ class _MyAppViewState extends State<MyAppView> {
             borderRadius: BorderRadius.circular(30),
           ),
           child: ElevatedButton(
+            child: Container(
+                width: double.infinity,
+                height: 50,
+                child: Center(child: Text("Sign Up"))),
             onPressed: () {
               //Form Submission Gestionner
+              var name = _regControllers['name']?.text;
+              var phone = _regControllers['phone']?.text;
+              var regEmail = _regControllers['email']?.text;
+              var regPassword = _regControllers['password']?.text;
+              var regPasswordConfirm =
+                  _regControllers['password_confirm']?.text;
               var data = {
-                'name': _regControllers['name']?.text,
-                'phone': _regControllers['phone']?.text,
-                'email': _regControllers['email']?.text,
-                'password': _regControllers['password']?.text,
-                'password_confirm': _regControllers['password_confirm']?.text
+                'name': name,
+                'phone': phone,
+                'email': regEmail,
+                'password': regPassword,
+                'password_confirm': regPasswordConfirm
               };
-              setState(() {
-                loading_register = true;
-              });
               _register(data, context);
             },
             style: ElevatedButton.styleFrom(
@@ -318,27 +319,6 @@ class _MyAppViewState extends State<MyAppView> {
                 borderRadius: BorderRadius.circular(15),
               ),
             ),
-            child: SizedBox(
-                height: 50,
-                child:
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Container(
-                    margin: EdgeInsets.only(left: 36),
-                    child: const Text("S'inscrire'"),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 20),
-                    height: 16,
-                    width: 16,
-                    child:
-                        loading_register //Tu remplacera ici par le booléen de la fonction register !
-                            ? CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              )
-                            : Wrap(),
-                  )
-                ])),
           ),
         ),
 
@@ -356,15 +336,12 @@ class _MyAppViewState extends State<MyAppView> {
           txtController: _mainControllers['email'],
         ),
         SizedBox(height: 30),
-        CustomTextField(title: 'Mot de Passe', placeholder: 'Mot de passe')
+        CustomTextField(title: 'password', placeholder: 'password')
             .textFormField(
-                txtController: _mainControllers['password'],
-                hider: pass_obscurer,
-                index: 1,
-                obcurer: obscure),
+                txtController: _mainControllers['password'], obscure: true),
         TextButton(
             onPressed: () {
-              print("Mot de passe oublié : Il faut gerer ça !");
+              print("password forgotten");
             },
             child: Text("Mot de passe oublié ?")),
         SizedBox(height: 40),
@@ -381,13 +358,14 @@ class _MyAppViewState extends State<MyAppView> {
               var password = _mainControllers['password']?.text;
 
               setState(() {
-                loading_login = true;
+                     loading_login = true;
               });
 
               var data = {"email": email, "password": password};
               SharedPreferences prefs = await SharedPreferences.getInstance();
               prefs.setString('password', data['password']!);
               _login(data, Context);
+
             },
             style: ElevatedButton.styleFrom(
               primary: Colors.blue,
@@ -396,44 +374,33 @@ class _MyAppViewState extends State<MyAppView> {
                 borderRadius: BorderRadius.circular(15),
               ),
             ),
-            child: SizedBox(
-                height: 50,
-                child:
-                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Container(
-                    margin: EdgeInsets.only(left: 36),
-                    child: const Text("Se Connecter"),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 20),
-                    height: 16,
+            child:  (loading_login)
+                ? const SizedBox(
                     width: 16,
-                    child: loading_login
-                        ? CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          )
-                        : Wrap(),
-                  )
-                ])),
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 1.5,
+                    ))
+                :Container(height: 50, child: Center(child: Text("Sign In"))),
           ),
         ),
       ],
     );
   }
 
-  void _login(data, context) async {
+
+  void _login(data,  context) async {
     var res = await CallApi().AuthenticateUser(data);
     var body = json.decode(res.body);
     if (await body['status'] == 200) {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-
       prefs.setString('token', body['token']);
       prefs.setString('name', body['user']['name']);
       prefs.setString('email', body['user']['email']);
-      prefs.setString('phone', body['user']['phone']);
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => UserHome()));
+      prefs.setInt('phone', body['user']['phone']); 
+      prefs.setInt('id', body['user']['id']);
+      Navigator.push( context, MaterialPageRoute(builder: (context) => UserHome()));
     } else {
       setState(() {
         errors = body['message'];
@@ -444,7 +411,8 @@ class _MyAppViewState extends State<MyAppView> {
   }
 
   void _register(data, BuildContext context) async {
-    var res = await CallApi().postData(data, 'register');
+    
+      var res = await CallApi().postData(data, 'register');
       var body = json.decode(res.body);
       print(body['user']);
 
@@ -461,7 +429,6 @@ class _MyAppViewState extends State<MyAppView> {
       } else {
         setState(() {
           errors = body['message'];
-          loading_register = false;
         });
         print(body['message']);
       }
@@ -481,7 +448,6 @@ class _MyAppViewState extends State<MyAppView> {
       decoration: isActive
           ? BoxDecoration(
               color: Colors.white,
-              // ignore: prefer_const_literals_to_create_immutables
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey,
@@ -501,7 +467,6 @@ class _MyAppViewState extends State<MyAppView> {
             ? BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(35),
-                // ignore: prefer_const_literals_to_create_immutables
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey,
@@ -512,7 +477,7 @@ class _MyAppViewState extends State<MyAppView> {
               )
             : BoxDecoration(),
         child: Image.asset(
-          image,
+          '$image',
           width: 35,
         ),
       )),
