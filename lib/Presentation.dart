@@ -42,47 +42,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
     //Maintenant les données des cours de la formation
   };
 
-  //On extrait la liste des des cours contenus dans les données reccupérées
-  /*
-  List courses = [
-    {
-      'cours_id': 'COURS_ML01',
-      'name': 'Base de données',
-      'description': "1er cours, desc",
-      'price': 23000
-    },
-    //2eme cours
-    {
-      'cours_id': 'COURS_ML02',
-      'name': 'Modelisation',
-      'description': "2eme cours, desc",
-      'price': 23000
-    },
-    //3eme cours
-
-    {
-      'cours_id': 'COURS_ML03',
-      'name': 'Initiation à Python',
-      'description':
-          "On vous initiera au langage Python, eut aux modules utiles en machine Learning",
-      'price': 23000
-    },
-    //4eme cours
-    {
-      'cours_id': 'COURS_ML04',
-      'name': 'TP: La reconnaissance facile',
-      'description': "4eme cours, desc",
-      'price': 23000
-    }
-  ];
-*/
-  /*
-      On peut utiliser uiliser une fonction asynchrone *getformation*, qui permettra de donner la valeurs de da
-     */
-//============================EN BAS C'EST LES GESTIONNAIRE PPOUR LES CHECKBOX
-  /*
-     Ici je cree les gestionnaire de check box en fontion des id de cours trouvés !
-     */
+  
   List courses = [];
   Map<String, bool> CoursAchete = {};
   //a pratir de lui on pourra savoir quel cours a eté acheté ou pas
@@ -112,7 +72,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
         else
           for (Map<String, dynamic> course in courses)
             if (course['cours_id'] == key)
-              montantTotal += (course['price'] as double);
+              montantTotal += (course['montant'] as double);
       });
       if (allBuyed)
 
@@ -198,10 +158,10 @@ Commencer par les details de la formation même puis passer à ceux des cours   
           future: getCourses(widget.formation_id),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              courses.addAll(snapshot.data![0]['message']);
+              courses = snapshot.data![0]['message'];
               print(courses);
               return CoursesBloc(
-                      courses: snapshot.data![0]['message'],
+                      courses: courses,
                       pressEvent: (String key) => courseToDisplay(key))
                   .getCoursesBloc(
                       changeTo: (String s, bool e) => courseMarketManager(s, e),
@@ -209,7 +169,13 @@ Commencer par les details de la formation même puis passer à ceux des cours   
                       bloc: _bloc,
                       box: CoursAchete);
             }
-            return const CircularProgressIndicator.adaptive();
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const CircularProgressIndicator.adaptive(),
+              ],
+            );
           }),
 
       //Boutton de souscripttion avec prix total à payer !
@@ -302,6 +268,3 @@ Commencer par les details de la formation même puis passer à ceux des cours   
     ]);
   }
 }
-  
-
-  
