@@ -8,8 +8,9 @@ class CustomCardView {
   final String title;
   final String description;
   final String image;
+  final Map formation;
   CustomCardView(
-      {required this.formation_id,
+      {required this.formation_id, required this.formation, 
       this.title = "",
       this.description = "",
       this.image = ""});
@@ -41,7 +42,7 @@ class CustomCardView {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: ((context) => PresentAndBuyFormation(
+                                builder: ((context) => PresentAndBuyFormation(formation: formation,
                                     formation_id: formation_id))));
                       },
                       child: const Text('Souscrire')),

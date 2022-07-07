@@ -10,14 +10,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart';
 
 void main() {
-  runApp(const PresentAndBuyFormation(formation_id: 'No formation Selected'));
+  runApp(const PresentAndBuyFormation(formation_id: 'No formation Selected',formation: {},));
 }
 
 double height = 0, width = 0;
 
 class PresentAndBuyFormation extends StatefulWidget {
   final String formation_id;
-  const PresentAndBuyFormation({Key? key, required this.formation_id})
+  final Map formation;
+  const PresentAndBuyFormation({Key? key, required this.formation_id, required this.formation})
       : super(key: key);
 
   @override
@@ -28,19 +29,6 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
   /// Ici on va reccuperer les in formations de la formlation ainsi que de chaque
   /// cours qu'il contient et le stocker dans formation
 
-  Map<String, dynamic> formation =
-      //Informations sur la formation !
-      {
-    'formation_id': 'ML01',
-    'name': "Machine leaning",
-    'price': 230000, //ici c'est juste les donneees de la fonmation
-    'description':
-        "Ici vous apprendrez à ecrire des modele basiques d'apprentissage machine  ",
-    'debouche': "Vous ferez de l'IA, c'est les debouchées en tout cas !",
-    'employeur': "Travailler chez Togettech\n Chez LegionWeb ()",
-    'start': DateTime.now().toString(),
-    //Maintenant les données des cours de la formation
-  };
 
   List courses = [];
   Map<String, bool> CoursAchete = {};
@@ -131,6 +119,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
                 elevation: 10,
                 //expandedHeight: 250.0,
                 flexibleSpace: Container(
+                  alignment: Alignment.center,
                   padding: EdgeInsets.symmetric(horizontal: 10),
                   height: height * 0.12,
                   width: double.infinity,
@@ -151,7 +140,7 @@ Commencer par les details de la formation même puis passer à ceux des cours   
     return [
       //Elements descriptifs d'une formation
 
-      _bloc('description', 0, -1), _bloc('debouche', 0, -1),
+      _bloc('description', 0, -1), _bloc('debouches', 0, -1),
       _bloc('employeur', 0, -1),
 
       //On passe à present aux cours de la formation
@@ -220,7 +209,7 @@ Commencer par les details de la formation même puis passer à ceux des cours   
     // pour le info d'une formation, il suffit de donner course_index -1 car il n'est pas utile
     String content = 'None';
     degree == 0 //pour la formation
-        ? content = formation[titleKey].toString()
+        ? content = widget.formation[titleKey].toString()
         : content = courses[course_index][titleKey].toString();
 
     return Container(
@@ -230,7 +219,7 @@ Commencer par les details de la formation même puis passer à ceux des cours   
         children: [
           ListTile(
             title: Text(
-                titleKey == 'debouche' ? "Débouchées" : Capitalise(titleKey)),
+                titleKey == 'debouches' ? "Débouchées" : Capitalise(titleKey)),
             subtitle: Column(
               children: [
                 const Divider(
@@ -258,14 +247,12 @@ Commencer par les details de la formation même puis passer à ceux des cours   
   Widget FormationName(BuildContext context) {
     return Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
       ListTile(
-          title: Text(formation['name'], style: const TextStyle(fontSize: 24)),
-          subtitle: Text("Date de debut :${formation['start']}"),
+        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: ()=> Navigator.pop(context),),
+          title: Text(widget.formation['titre'], style: const TextStyle(fontSize: 24)),
+          subtitle: Text("Date de debut :${widget.formation['date_debut']}"),
           trailing: IconButton(
               icon: const Icon(Icons.add_shopping_cart_rounded),
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => UserHome()));
-              }))
+              onPressed: () => print("achat cours")))
     ]);
   }
 }

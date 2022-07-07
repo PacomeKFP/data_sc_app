@@ -302,6 +302,7 @@ class _UserHomeState extends State<UserHome> {
                   itemCount: snapshot.data![0]['formations'].length,
                   itemBuilder: (BuildContext ctx, index) {
                     return CustomCardView(
+                      formation: formations[index],
                             formation_id: formations[index]["formation_id"],
                             title: formations[index]["titre"],
                             description: formations[index]["debouches"],
