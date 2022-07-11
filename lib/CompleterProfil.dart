@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:data_sc_tester/GetStarted.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'Presentation.dart';
 import 'api/CallApi.dart';
 import 'skills/TextField.dart';
 import 'UserPage.dart';
@@ -57,12 +58,12 @@ class Head extends StatelessWidget {
 
 final _profilControllers = {
   'profession': TextEditingController(),
-  'experience': TextEditingController(),
+  'niveau_exp': TextEditingController(),
   'employeur': TextEditingController(),
   'diplome': TextEditingController(),
   'ecole': TextEditingController(),
   'domaine': TextEditingController(),
-  'profession_visee': TextEditingController(),
+  'profession_v': TextEditingController(),
   'secteur': TextEditingController(),
   'last': TextEditingController(),
 };
@@ -82,10 +83,10 @@ class Body extends StatelessWidget {
         _voletInscription(
           title: 'Expérience Professionelle',
           Champs1: 'Profession',
-          Champs2: "Niveau d'Experience",
+          Champs2: "Niveau d'niveau_exp",
           Champs3: 'Employeur',
           contro1: _profilControllers["profession"],
-          contro2: _profilControllers["experience"],
+          contro2: _profilControllers["niveau_exp"],
           contro3: _profilControllers["employeur"],
         ),
         const SizedBox(height: 30),
@@ -103,7 +104,7 @@ class Body extends StatelessWidget {
           title: 'Objectif de Carrière',
           Champs1: 'Profession',
           Champs2: 'Secteur',
-          contro1: _profilControllers["profession_visee"],
+          contro1: _profilControllers["profession_v"],
           contro2: _profilControllers["secteur"],
           contro3: _profilControllers["last"],
         ),
@@ -131,19 +132,10 @@ class Body extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 //TODO: collecter  en envoyer les informations
-                var data = {
-                  'profession': _profilControllers['profession']?.text,
-                  'experience': _profilControllers['experience']?.text,
-                  'employeur': _profilControllers['employeur']?.text,
-                  'diplome': _profilControllers['diplome']?.text,
-                  'ecole': _profilControllers['ecole']?.text,
-                  'domaine': _profilControllers['domaine']?.text,
-                  'profession_visee':
-                      _profilControllers['profession_visee']?.text,
-                  'secteur': _profilControllers['secteur']?.text,
-                  'last': _profilControllers['last']?.text
-                };
-                print("object");
+                var data = {};
+                _profilControllers.forEach((key, value) {
+                  data[key] = value.text;
+                });
                 _completerInscription(data, context);
               },
               child: const Text('Continuer'),
@@ -157,14 +149,30 @@ class Body extends StatelessWidget {
 
   _completerInscription(data, context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    
+    var _is_inscrit =  prefs.getString('inscrits?');
     var id = prefs.getInt('id');
-    print("id :$id");
-    data['user_id'] = id;
-    data['formation_id'] = 0;
-    print("before");
-    var res = await CallApi().getData(data);
+    data['formation_id'] = '0';
+    
+    var res = await CallApi().postData(data, "new-inscrit");
     var body = json.decode(res.body);
-    print("data : ${data}");
+    
+    if(body['status'] == 200){
+      if(_is_inscrit == 'no') {
+         var formation_id = prefs.getString('formation_id');
+         prefs.remove('formation_id');
+         prefs.remove('_is_inscrit');
+        Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: ((context) => PresentAndBuyFormation(
+                formation_id:  formation_id!))));
+      } else  {
+        Navigator.push(context,MaterialPageRoute(builder: (context) => const UserHome()));
+      }
+    } else {
+      print(body['message']);
+    }
   }
 }
 
