@@ -1,7 +1,5 @@
 // ignore_for_file: non_constant_identifier_names
-
 import 'dart:convert';
-
 import 'package:data_sc_tester/CompleterProfil.dart';
 import 'package:data_sc_tester/api/CallApi.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +11,9 @@ class CustomCardView {
   final String title;
   final String description;
   final String image;
+  final Map formation;
   CustomCardView(
-      {required this.formation_id,
+      {required this.formation_id, required this.formation, 
       this.title = "",
       this.description = "",
       this.image = ""});
@@ -46,6 +45,7 @@ class CustomCardView {
                         _is_inscrits(context, formation_id);
                          
                       }, 
+
                       child: const Text('Souscrire')),
                   const Text(
                     "Description",
@@ -75,13 +75,20 @@ class CustomCardView {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var res = await CallApi().postData({}, 'is-inscrit');
     var body = json.decode(res.body);
-    print(body);
+    var res_get_formation = await CallApi().postData({}, "get-details-formation/$formation_id"); 
+    var body_get_formation = json.decode(res_get_formation.body);
+    print(body_get_formation['status']);
     if (await body['inscrit?'] == true) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
+      if (body_get_formation['status'] == 200) {
+           Navigator.push(
+          context,
+          MaterialPageRoute(
             builder: ((context) => PresentAndBuyFormation(
-                formation_id: formation_id))));
+                formation_id:  formation_id!,
+                formation: body_get_formation['formation'],)))); 
+         } else {
+           print(body_get_formation['message']);
+         }
     } else {
       
       prefs.setString('inscrits?', 'no');

@@ -90,6 +90,7 @@ class _GetStartedState extends State<GetStarted> {
       children: [
         for (Map data in DATA)
           CustomCardView(
+            formation: data,
                   formation_id: 'ML01',
                   title: data["title"],
                   description: data["description"],
@@ -97,6 +98,7 @@ class _GetStartedState extends State<GetStarted> {
               .cardview(buildContext),
         for (Map data in DATA)
           CustomCardView(
+            formation: data,
                   formation_id: 'ML01',
                   title: data["title"],
                   description: data["description"],
@@ -104,6 +106,7 @@ class _GetStartedState extends State<GetStarted> {
               .cardview(buildContext),
         for (Map data in DATA)
           CustomCardView(
+            formation: data,
                   formation_id: 'ML01',
                   title: data["title"],
                   description: data["description"],

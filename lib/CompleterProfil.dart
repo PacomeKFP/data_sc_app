@@ -149,24 +149,31 @@ class Body extends StatelessWidget {
 
   _completerInscription(data, context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    
+    var formation_id = prefs.getString('formation_id');
     var _is_inscrit =  prefs.getString('inscrits?');
     var id = prefs.getInt('id');
     data['formation_id'] = '0';
     
     var res = await CallApi().postData(data, "new-inscrit");
+    var res_get_formation = await CallApi().postData(data, "get-details-formation/$formation_id"); //get-details-formation/{id}
     var body = json.decode(res.body);
+    var body_get_formation = json.decode(res_get_formation.body);
     
     if(body['status'] == 200){
       if(_is_inscrit == 'no') {
-         var formation_id = prefs.getString('formation_id');
          prefs.remove('formation_id');
          prefs.remove('_is_inscrit');
-        Navigator.push(
-        context,
-        MaterialPageRoute(
+         if (body_get_formation['status'] == 200) {
+           Navigator.push(
+          context,
+          MaterialPageRoute(
             builder: ((context) => PresentAndBuyFormation(
-                formation_id:  formation_id!))));
+                formation_id:  formation_id!,
+                formation: body_get_formation['formation'],))));
+         }  else {
+            Navigator.push(context,MaterialPageRoute(builder: (context) => const UserHome()));
+         }
+        
       } else  {
         Navigator.push(context,MaterialPageRoute(builder: (context) => const UserHome()));
       }
