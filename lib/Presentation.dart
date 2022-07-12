@@ -1,16 +1,17 @@
 // ignore_for_file: non_constant_identifier_names, curly_braces_in_flow_control_structures, avoid_print
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:data_sc_tester/UserPage.dart';
 import 'package:data_sc_tester/api/CallApi.dart';
 import 'package:data_sc_tester/skills/CoursesTab.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart';
 
 void main() {
-  runApp(const PresentAndBuyFormation(formation_id: 'No formation Selected',formation: {},));
+  runApp(const PresentAndBuyFormation(
+    formation_id: 'No formation Selected',
+    formation: {},
+  ));
 }
 
 double height = 0, width = 0;
@@ -18,7 +19,8 @@ double height = 0, width = 0;
 class PresentAndBuyFormation extends StatefulWidget {
   final String formation_id;
   final Map formation;
-  const PresentAndBuyFormation({Key? key, required this.formation_id, required this.formation})
+  const PresentAndBuyFormation(
+      {Key? key, required this.formation_id, required this.formation})
       : super(key: key);
 
   @override
@@ -28,7 +30,6 @@ class PresentAndBuyFormation extends StatefulWidget {
 class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
   /// Ici on va reccuperer les in formations de la formlation ainsi que de chaque
   /// cours qu'il contient et le stocker dans formation
-
 
   List courses = [];
   Map<String, bool> CoursAchete = {};
@@ -61,7 +62,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
             if (course['cours_id'] == key)
               montantTotal += (course['montant'].toString() == ""
                   ? 0
-                  : (course['montant'] as double));
+                  : (double.parse(course['montant'].toString())));
       });
       if (allBuyed)
 
@@ -75,6 +76,10 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
   Future<List> getCourses(data) async {
     var response = await CallApi()
         .postData(data, 'formation/${widget.formation_id}/cours');
+
+        // print(response.body['message']);
+
+        updateMontantTotal();
 
     return response.statusCode == 200
         ? [json.decode(response.body)]
@@ -149,8 +154,8 @@ Commencer par les details de la formation même puis passer à ceux des cours   
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               courses = snapshot.data![0]['message'];
-              print(courses);
               return CoursesBloc(
+                      // init : updateMontantTotal(),
                       courses: courses,
                       pressEvent: (String key) => courseToDisplay(key))
                   .getCoursesBloc(
@@ -247,8 +252,13 @@ Commencer par les details de la formation même puis passer à ceux des cours   
   Widget FormationName(BuildContext context) {
     return Wrap(crossAxisAlignment: WrapCrossAlignment.center, children: [
       ListTile(
-        leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: ()=> Navigator.pop(context),),
-          title: Text(widget.formation['titre'], style: const TextStyle(fontSize: 24)),
+          leading: IconButton(
+            icon: Icon(Icons.home_outlined),
+            onPressed: () => Navigator.push(
+                context, MaterialPageRoute(builder: ((context) => UserHome()))),
+          ),
+          title: Text(widget.formation['titre'],
+              style: const TextStyle(fontSize: 24)),
           subtitle: Text("Date de debut :${widget.formation['date_debut']}"),
           trailing: IconButton(
               icon: const Icon(Icons.add_shopping_cart_rounded),

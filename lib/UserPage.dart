@@ -341,6 +341,7 @@ class _UserHomeState extends State<UserHome> {
           ),
           SizedBox(
                 child: IconButton(
+                  
                   onPressed: () => {_logout()},
                   icon: const Icon(Icons.logout_rounded),
                 ),
@@ -415,6 +416,7 @@ class _UserHomeState extends State<UserHome> {
             children: [
               
               Container(
+                
                 height: height * .08,
                 child: UserProfile(NameUser, "../assets/images/profil.jpeg",
                     width), //prend user id en param
