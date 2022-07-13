@@ -1,11 +1,14 @@
 // ignore_for_file: non_constant_identifier_names, curly_braces_in_flow_control_structures, avoid_print
 import 'dart:convert';
 
+import 'package:data_sc_tester/Transaction.dart';
 import 'package:data_sc_tester/UserPage.dart';
 import 'package:data_sc_tester/api/CallApi.dart';
 import 'package:data_sc_tester/skills/CoursesTab.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const PresentAndBuyFormation(
@@ -64,10 +67,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
                   ? 0
                   : (double.parse(course['montant'].toString())));
       });
-      if (allBuyed)
-
-        ///tarif special//reduction de 20%
-        montantTotal *= 0.8;
+      // if (allBuyed) montantTotal *= 0.8;
     });
   }
 
@@ -77,9 +77,9 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
     var response = await CallApi()
         .postData(data, 'formation/${widget.formation_id}/cours');
 
-        // print(response.body['message']);
+    // print(response.body['message']);
 
-        updateMontantTotal();
+    updateMontantTotal();
 
     return response.statusCode == 200
         ? [json.decode(response.body)]
@@ -155,7 +155,6 @@ Commencer par les details de la formation même puis passer à ceux des cours   
             if (snapshot.hasData) {
               courses = snapshot.data![0]['message'];
               return CoursesBloc(
-                      // init : updateMontantTotal(),
                       courses: courses,
                       pressEvent: (String key) => courseToDisplay(key))
                   .getCoursesBloc(
@@ -181,7 +180,7 @@ Commencer par les details de la formation même puis passer à ceux des cours   
           Text("Prix total : ${montantTotal}F"),
           const SizedBox(width: 1),
           OutlinedButton.icon(
-              onPressed: () => print("buy Courses $CoursAchete"),
+              onPressed: () => _buyCourse(context),
               icon: const Icon(Icons.add_shopping_cart_rounded),
               label: const Text("Finaliser l'achat !"))
         ],
@@ -262,7 +261,45 @@ Commencer par les details de la formation même puis passer à ceux des cours   
           subtitle: Text("Date de debut :${widget.formation['date_debut']}"),
           trailing: IconButton(
               icon: const Icon(Icons.add_shopping_cart_rounded),
-              onPressed: () => print("achat cours")))
+              onPressed: () => _buyCourse(context)))
     ]);
+  }
+
+  void _buyCourse(BuildContext context) async {
+    var response =
+        await CallApi().postData("data", "payment/init/$montantTotal");
+print(json.decode(response.body));
+    print(json.decode(response.body)['response']['data']['payment_url']);
+    print(json.decode(response.body)['response']['data']);
+    var formation_id = widget.formation_id;
+    var transaction_id = json.decode(response.body)['transaction_id'];
+    var resp = await CallApi()
+        .postData("data", "payment/status/$formation_id/$transaction_id");
+print(json.decode(response.body));
+
+
+    if (json.decode(resp.body)['status'] == 400) {
+      print("Statut 400");
+      Fluttertoast.showToast(msg: "Echec 400 Reessayer", toastLength: Toast.LENGTH_LONG, timeInSecForIosWeb: 5, webPosition: "center");
+    } else {
+// ignore: use_build_context_synchronously
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Transaction(
+                    url: json
+                        .decode(response.body)['response']['data']
+                            ['payment_url']
+                        .toString(),
+                    info: {
+                      'token': json.decode(response.body)['response']['data']
+                          ['payment_token'],
+                      'transaction_id':
+                          json.decode(response.body)['transaction_id'],
+                      'formation_id': widget.formation_id,
+                      'courses': CoursAchete,
+                    },
+                  )));
+    }
   }
 }

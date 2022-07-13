@@ -18,7 +18,8 @@ void main() {
 }
 
 class UserHome extends StatefulWidget {
-  const UserHome({Key? key}) : super(key: key);
+  final int a;
+  const UserHome({Key? key, this.a = 0}) : super(key: key);
 
   @override
   State<UserHome> createState() => _UserHomeState();

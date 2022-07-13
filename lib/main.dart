@@ -6,6 +6,7 @@ import 'package:data_sc_tester/CompleterProfil.dart';
 import 'package:data_sc_tester/api/CallApi.dart';
 import 'package:data_sc_tester/skills/TextField.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'skills/Navigation.dart';
@@ -332,10 +333,14 @@ class _MyAppViewState extends State<MyAppView> {
                     width: 16,
                     child:
                         loading_register //Tu remplacera ici par le booléen de la fonction register !
-                            ? CircularProgressIndicator(
-                                strokeWidth: 2,
+                            ? SpinKitCircle(
+                                size: 14,
                                 color: Colors.white,
                               )
+                            //  CircularProgressIndicator(
+                            //     strokeWidth: 2,
+                            //     color: Colors.white,
+                            //   )
                             : Wrap(),
                   )
                 ])),
@@ -401,16 +406,16 @@ class _MyAppViewState extends State<MyAppView> {
                 child:
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Container(
-                    margin: EdgeInsets.only(left: 36),
+                    margin: EdgeInsets.only(left: 52),
                     child: const Text("Se Connecter"),
                   ),
                   Container(
-                    margin: EdgeInsets.only(left: 20),
-                    height: 16,
-                    width: 16,
+                    margin: EdgeInsets.only(left: 30),
+                    height: 24,
+                    width: 30,
                     child: loading_login
-                        ? CircularProgressIndicator(
-                            strokeWidth: 2,
+                        ? SpinKitDoubleBounce(
+                            size: 20,
                             color: Colors.white,
                           )
                         : Wrap(),
@@ -445,26 +450,27 @@ class _MyAppViewState extends State<MyAppView> {
 
   void _register(data, BuildContext context) async {
     var res = await CallApi().postData(data, 'register');
-      var body = json.decode(res.body);
-      print(body['user']);
+    var body = json.decode(res.body);
+    print(body['user']);
 
-      if (await body['status'] == 200) {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('token', body['token']);
-          prefs.setString('name', body['user']['name']);
-          prefs.setString('email', body['user']['email']);
-          prefs.setInt('phone', body['user']['phone']);
-          prefs.setInt('id', body['user']['id']);       
-           // ignore: use_build_context_synchronously
-           print('iciiii');
-           Navigator.push( context, MaterialPageRoute(builder: (context) => const  InscriptionPage()));
-      } else {
-        setState(() {
-          errors = body['message'];
-          loading_register = false;
-        });
-        print(body['message']);
-      }
+    if (await body['status'] == 200) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('token', body['token']);
+      prefs.setString('name', body['user']['name']);
+      prefs.setString('email', body['user']['email']);
+      prefs.setInt('phone', body['user']['phone']);
+      prefs.setInt('id', body['user']['id']);
+      // ignore: use_build_context_synchronously
+      print('iciiii');
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const InscriptionPage()));
+    } else {
+      setState(() {
+        errors = body['message'];
+        loading_register = false;
+      });
+      print(body['message']);
+    }
   }
 
   Widget _loginWithButton({required String image, bool isActive = false}) {
