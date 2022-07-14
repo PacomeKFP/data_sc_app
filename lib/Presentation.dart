@@ -273,26 +273,26 @@ Commencer par les details de la formation même puis passer à ceux des cours   
     var formation_id = widget.formation_id;
     var transaction_id = json.decode(response.body)['transaction_id'];
 
+    print(response.body);
+
     var resp = await CallApi()
         .postData("data", "payment/status/$formation_id/$transaction_id");
 
     if (json.decode(resp.body)['status'] == 400) {
       print("Statut 400");
-      makeToast(msg: "Une Erreur est survenue lors du paiement", context: context);
+      makeToast(
+          msg: "Une Erreur est survenue lors du paiement", context: context);
     } else {
       print(response.body);
+      print("\n\n");
+      print(resp.body);
 
       Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => Transaction(
-                    url: json
-                        .decode(response.body)['response']['data']
-                            ['payment_url']
-                        .toString(),
+                    url: json.decode(response.body)['link'].toString(),
                     info: {
-                      'token': json.decode(response.body)['response']['data']
-                          ['payment_token'],
                       'transaction_id':
                           json.decode(response.body)['transaction_id'],
                       'formation_id': widget.formation_id,

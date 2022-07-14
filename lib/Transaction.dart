@@ -44,10 +44,10 @@ class _TransactionState extends State<Transaction> {
     print(widget.info);
   }
 
-  List<String> status = ['FAILED', 'PENDING', 'SUCCESS'];
+  List<String> status = ['FAILED', 'PENDING', 'SUCCES'];
 
   yo(BuildContext context) {
-    Timer(const Duration(seconds: 5), (() async {
+    Timer(const Duration(seconds: 10), (() async {
       var formation_id = widget.info['formation_id'];
       var transaction_id = widget.info['transaction_id'];
 
@@ -55,9 +55,11 @@ class _TransactionState extends State<Transaction> {
       var response = await CallApi().postData(
           widget.info, "payment/status/$formation_id/$transaction_id");
 
-      print(response.body);
+      print(json.decode(response.body));
       var body = json.decode(response.body);
       print(body['status']);
+
+      print('transaction ID:$transaction_id');
 
       if (body['status'] == 400) Navigator.of(context).pop();
       //TODO : ajouter un toast dans Presentation, pour dire echec, veuillez reessayer
@@ -89,8 +91,13 @@ class _TransactionState extends State<Transaction> {
 
   @override
   Widget build(BuildContext context) {
-    compute(yo(context), 'test');
-    makeToast(msg: "Transaction initiée", context: context);
+    // compute(yo(context), 'test');
+    
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      yo(context);
+      makeToast(msg: "Transaction initiée", context: context);
+    });
+    
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
