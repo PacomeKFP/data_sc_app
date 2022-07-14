@@ -7,6 +7,7 @@ import 'package:data_sc_tester/skills/CustomCardView.dart';
 import 'package:data_sc_tester/skills/HomeFunctions.dart';
 import 'package:data_sc_tester/skills/HomeUserWidgets.dart';
 import 'package:data_sc_tester/skills/TabMenu.dart';
+import 'package:data_sc_tester/skills/ToastWidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,34 +27,6 @@ class UserHome extends StatefulWidget {
 }
 //==============CONTROLERS IMPLEMENTATION============================
 
-List<Map> DATA = [
-  {
-    "title": "Data Analyst",
-    "description": "Ce module est tres important",
-    "image": "../../assets/images/3.jpg",
-  },
-  {
-    "title": "Data Mining",
-    "description": "Ce module est tres important",
-    "image": "../../assets/images/2.jpg",
-  },
-  {
-    "title": "Data Mining",
-    "description": "Ce module est tres important",
-    "image": "../../assets/images/1.jpg",
-  },
-  {
-    "title": "Data Mining",
-    "description": "Ce module est tres important",
-    "image": "../../assets/images/2.jpg",
-  },
-  {
-    "title": "Data Mining",
-    "description": "Ce module est tres important",
-    "image": "../../assets/images/3.jpg",
-  },
-];
-
 final _userControllers = {
   'searchBar': TextEditingController(),
 };
@@ -68,7 +41,7 @@ double optionCardWidth = 800.0, optionCardSpacing = 10.0;
 
 class _UserHomeState extends State<UserHome> {
   int index = 0;
-  var NameUser;
+  var NameUser = "";
   var link_images = "http://elearning.togettechinov.com/datapp/public/storage/";
   double height = 0, width = 0;
   @override
@@ -83,12 +56,17 @@ class _UserHomeState extends State<UserHome> {
     final prefs = await SharedPreferences.getInstance();
     var name = prefs.getString('name');
     setState(() {
-      NameUser = name;
+      NameUser = name!;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (index == 0)
+        makeToast(msg: 'Bienvenue $NameUser', type: 'info', context: context);
+    });
+
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
 
@@ -277,8 +255,6 @@ class _UserHomeState extends State<UserHome> {
     return Center(child: Lister(buildContext: context));
   }
 
-
-
   Widget Lister(
       {required BuildContext buildContext, String trainingType = "all", data}) {
     /**On va d'abord faire une requette pour reccuperer les formations à afficher
@@ -303,11 +279,11 @@ class _UserHomeState extends State<UserHome> {
                   itemCount: snapshot.data![0]['formations'].length,
                   itemBuilder: (BuildContext ctx, index) {
                     return CustomCardView(
-                      formation: formations[index],
+                            formation: formations[index],
                             formation_id: formations[index]["formation_id"],
                             title: formations[index]["titre"],
                             description: formations[index]["debouches"],
-                            image: link_images+formations[index]["image"])
+                            image: link_images + formations[index]["image"])
                         .cardview(buildContext);
                   });
             } else {
@@ -341,12 +317,11 @@ class _UserHomeState extends State<UserHome> {
             value: 2,
           ),
           SizedBox(
-                child: IconButton(
-                  
-                  onPressed: () => {_logout()},
-                  icon: const Icon(Icons.logout_rounded),
-                ),
-              ),
+            child: IconButton(
+              onPressed: () => {_logout()},
+              icon: const Icon(Icons.logout_rounded),
+            ),
+          ),
         ],
       ),
     );
@@ -415,9 +390,7 @@ class _UserHomeState extends State<UserHome> {
           ),
           Row(
             children: [
-              
               Container(
-                
                 height: height * .08,
                 child: UserProfile(NameUser, "../assets/images/profil.jpeg",
                     width), //prend user id en param
@@ -435,32 +408,35 @@ class _UserHomeState extends State<UserHome> {
       cursor: SystemMouseCursors.click,
       child: Column(
         children: [
-          title == "Page d'acceuil" ?IconButton(onPressed:() {
-              if (isActive == false) {
-                setState(() {
-                  index = value;
-                });
-              }
-            } , icon:const Icon(Icons.house_outlined
-            ))  : TextButton(
-            style: TextButton.styleFrom(
-              textStyle: const TextStyle(),
-            ),
-            onPressed: () {
-              if (isActive == false) {
-                setState(() {
-                  index = value;
-                });
-              }
-            },
-            child: Text(
-              '$title',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: isActive ? Colors.blue : Colors.grey,
-              ),
-            ),
-          ),
+          title == "Page d'acceuil"
+              ? IconButton(
+                  onPressed: () {
+                    if (isActive == false) {
+                      setState(() {
+                        index = value;
+                      });
+                    }
+                  },
+                  icon: const Icon(Icons.house_outlined))
+              : TextButton(
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(),
+                  ),
+                  onPressed: () {
+                    if (isActive == false) {
+                      setState(() {
+                        index = value;
+                      });
+                    }
+                  },
+                  child: Text(
+                    '$title',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: isActive ? Colors.blue : Colors.grey,
+                    ),
+                  ),
+                ),
           const SizedBox(height: 6),
           isActive
               ? Container(

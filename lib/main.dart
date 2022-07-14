@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:data_sc_tester/CompleterProfil.dart';
 import 'package:data_sc_tester/api/CallApi.dart';
 import 'package:data_sc_tester/skills/TextField.dart';
+import 'package:data_sc_tester/skills/ToastWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -428,6 +429,9 @@ class _MyAppViewState extends State<MyAppView> {
   }
 
   void _login(data, context) async {
+    makeToast(
+        msg: "Veuillez patienter le temps que nous vous connectons",
+        type: 'debug', context: context);
     var res = await CallApi().AuthenticateUser(data);
     var body = json.decode(res.body);
     if (await body['status'] == 200) {
@@ -440,6 +444,10 @@ class _MyAppViewState extends State<MyAppView> {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => UserHome()));
     } else {
+      makeToast(
+          msg:
+              "Echec de la connexion, verifier votre connexion internet et  vos identifiants puis reéssayer",
+          type: "alert", context: context);
       setState(() {
         errors = body['message'];
         loading_login = false;
@@ -449,6 +457,8 @@ class _MyAppViewState extends State<MyAppView> {
   }
 
   void _register(data, BuildContext context) async {
+    makeToast(
+        msg: "Veuillez patienter le temps de l'inscription", type: 'debug', context: context);
     var res = await CallApi().postData(data, 'register');
     var body = json.decode(res.body);
     print(body['user']);
@@ -469,6 +479,10 @@ class _MyAppViewState extends State<MyAppView> {
         errors = body['message'];
         loading_register = false;
       });
+      makeToast(
+          msg:
+              "Echec de l'inscription, verifier votre connexion internet et  vos identifiants puis reéssayez ",
+          type: "alert", context:  context);
       print(body['message']);
     }
   }

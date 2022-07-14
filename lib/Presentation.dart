@@ -1,10 +1,11 @@
-// ignore_for_file: non_constant_identifier_names, curly_braces_in_flow_control_structures, avoid_print
+// ignore_for_file: non_constant_identifier_names, curly_braces_in_flow_control_structures, avoid_print, use_build_context_synchronously
 import 'dart:convert';
 
 import 'package:data_sc_tester/Transaction.dart';
 import 'package:data_sc_tester/UserPage.dart';
 import 'package:data_sc_tester/api/CallApi.dart';
 import 'package:data_sc_tester/skills/CoursesTab.dart';
+import 'package:data_sc_tester/skills/ToastWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -268,21 +269,19 @@ Commencer par les details de la formation même puis passer à ceux des cours   
   void _buyCourse(BuildContext context) async {
     var response =
         await CallApi().postData("data", "payment/init/$montantTotal");
-print(json.decode(response.body));
-    print(json.decode(response.body)['response']['data']['payment_url']);
-    print(json.decode(response.body)['response']['data']);
+
     var formation_id = widget.formation_id;
     var transaction_id = json.decode(response.body)['transaction_id'];
+
     var resp = await CallApi()
         .postData("data", "payment/status/$formation_id/$transaction_id");
-print(json.decode(response.body));
-
 
     if (json.decode(resp.body)['status'] == 400) {
       print("Statut 400");
-      Fluttertoast.showToast(msg: "Echec 400 Reessayer", toastLength: Toast.LENGTH_LONG, timeInSecForIosWeb: 5, webPosition: "center");
+      makeToast(msg: "Une Erreur est survenue lors du paiement", context: context);
     } else {
-// ignore: use_build_context_synchronously
+      print(response.body);
+
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -297,7 +296,7 @@ print(json.decode(response.body));
                       'transaction_id':
                           json.decode(response.body)['transaction_id'],
                       'formation_id': widget.formation_id,
-                      'courses': CoursAchete,
+                      'cours': CoursAchete,
                     },
                   )));
     }

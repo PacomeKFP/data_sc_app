@@ -93,6 +93,6 @@ class CustomCardView {
       
       prefs.setString('inscrits?', 'no');
       prefs.setString('formation_id', formation_id);
-      Navigator.push( context, MaterialPageRoute(builder: (context) => const  InscriptionPage()));
+      Navigator.push( context, MaterialPageRoute(builder: (context) => const  InscriptionPage(provenance: 'home',)));
     } 
  }

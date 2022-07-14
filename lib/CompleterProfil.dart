@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:data_sc_tester/GetStarted.dart';
+import 'package:data_sc_tester/skills/ToastWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Presentation.dart';
@@ -13,10 +14,21 @@ void main() {
 }
 
 class InscriptionPage extends StatelessWidget {
-  const InscriptionPage({Key? key}) : super(key: key);
-
+  final String
+      provenance; //insciption(si  la page precedentee etait l'inscription, sinon home si c'est UserHomePage)
+  const InscriptionPage({Key? key, this.provenance = "inscription"})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
+    String txt = "Veuillez remplir quelques informations supplementaires";
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => makeToast(
+        msg: provenance == "inscription"
+            ? "Vous avez bien été inscrit \n $txt"
+            : "$txt, avant de consulter la formation",
+        type: "info",
+        context: context));
+
     return MaterialApp(
       title: 'Completez votre profil',
       home: LoginPage(),
@@ -148,36 +160,49 @@ class Body extends StatelessWidget {
   }
 
   _completerInscription(data, context) async {
+    makeToast(
+        msg:
+            "Veuillez patienter, nous prenons compte des informations renseignées",
+        type: 'info',
+        context: context);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var formation_id = prefs.getString('formation_id');
-    var _is_inscrit =  prefs.getString('inscrits?');
+    var _is_inscrit = prefs.getString('inscrits?');
     var id = prefs.getInt('id');
     data['formation_id'] = '0';
-    
+
     var res = await CallApi().postData(data, "new-inscrit");
-    var res_get_formation = await CallApi().postData(data, "get-details-formation/$formation_id"); //get-details-formation/{id}
+    var res_get_formation = await CallApi().postData(data,
+        "get-details-formation/$formation_id"); //get-details-formation/{id}
     var body = json.decode(res.body);
     var body_get_formation = json.decode(res_get_formation.body);
-    
-    if(body['status'] == 200){
-      if(_is_inscrit == 'no') {
-         prefs.remove('formation_id');
-         prefs.remove('_is_inscrit');
-         if (body_get_formation['status'] == 200) {
-           Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: ((context) => PresentAndBuyFormation(
-                formation_id:  formation_id!,
-                formation: body_get_formation['formation'],))));
-         }  else {
-            Navigator.push(context,MaterialPageRoute(builder: (context) => const UserHome()));
-         }
-        
-      } else  {
-        Navigator.push(context,MaterialPageRoute(builder: (context) => const UserHome()));
+
+    if (body['status'] == 200) {
+      if (_is_inscrit == 'no') {
+        prefs.remove('formation_id');
+        prefs.remove('_is_inscrit');
+        if (body_get_formation['status'] == 200) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: ((context) => PresentAndBuyFormation(
+                        formation_id: formation_id!,
+                        formation: body_get_formation['formation'],
+                      ))));
+        } else {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const UserHome()));
+        }
+      } else {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const UserHome()));
       }
     } else {
+      makeToast(
+          msg:
+              "Une erreur est survenue, veuillez verifier votre acces à internet",
+          type: 'alert',
+          context: context);
       print(body['message']);
     }
   }

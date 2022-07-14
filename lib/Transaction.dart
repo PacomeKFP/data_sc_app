@@ -1,13 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:html' as html;
 import 'dart:io';
 import 'dart:js' as js;
 
+import 'package:data_sc_tester/skills/ToastWidget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import 'UserPage.dart';
 import 'api/CallApi.dart';
@@ -38,29 +40,8 @@ class _TransactionState extends State<Transaction> {
     super.initState();
     js.context.callMethod('open', [widget.url, '_blank']);
 
-    Toaster();
-    // updateTransactionStatus();
-  }
-
-  void _showToast(BuildContext context) {
-    final scaffold = ScaffoldMessenger.of(context);
-    scaffold.showSnackBar(
-      SnackBar(
-        content: const Text('Added to favorite'),
-        action: SnackBarAction(
-            label: 'UNDO', onPressed: scaffold.hideCurrentSnackBar),
-      ),
-    );
-  }
-
-  void Toaster() {
-    Fluttertoast.showToast(msg: "Init transaction", toastLength: Toast.LENGTH_LONG, gravity: ToastGravity.TOP, fontSize: 24);
-  }
-
-  bro() {
-    setState(() {
-      state = state == 2 ? 0 : state++;
-    });
+    print("object");
+    print(widget.info);
   }
 
   List<String> status = ['FAILED', 'PENDING', 'SUCCESS'];
@@ -71,8 +52,8 @@ class _TransactionState extends State<Transaction> {
       var transaction_id = widget.info['transaction_id'];
 
       print(formation_id);
-      var response = await CallApi()
-          .postData(widget.info, "payment/status/$formation_id/$transaction_id");
+      var response = await CallApi().postData(
+          widget.info, "payment/status/$formation_id/$transaction_id");
 
       print(response.body);
       var body = json.decode(response.body);
@@ -94,11 +75,10 @@ class _TransactionState extends State<Transaction> {
       if (state == 2) {
         //Success
 
-
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => UserHome(
+                builder: (context) => const UserHome(
                       a: 1,
                     )));
       }
@@ -109,10 +89,8 @@ class _TransactionState extends State<Transaction> {
 
   @override
   Widget build(BuildContext context) {
-    Toaster();
-    // Scaffold.of(context).showSnackBar(SnackBar(content: const Text("data")));
-    yo(context);
-
+    compute(yo(context), 'test');
+    makeToast(msg: "Transaction initiée", context: context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
