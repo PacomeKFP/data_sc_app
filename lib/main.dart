@@ -28,7 +28,7 @@ redirectAuth(token) {
     return MyApp();
   } else {
     _connectCurrentUser();
-    return UserHome();
+    return UserHome(toast: true,);
   }
 }
 

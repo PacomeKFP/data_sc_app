@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:data_sc_tester/FormationsEnCours.dart';
 import 'package:data_sc_tester/api/CallApi.dart';
 import 'package:data_sc_tester/skills/CustomCardView.dart';
 import 'package:data_sc_tester/skills/HomeFunctions.dart';
@@ -9,6 +10,7 @@ import 'package:data_sc_tester/skills/HomeUserWidgets.dart';
 import 'package:data_sc_tester/skills/TabMenu.dart';
 import 'package:data_sc_tester/skills/ToastWidget.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,12 +18,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'main.dart';
 
 void main() {
-  runApp(const UserHome());
+  runApp( UserHome());
 }
 
 class UserHome extends StatefulWidget {
   final int a;
-  const UserHome({Key? key, this.a = 0}) : super(key: key);
+  bool toast;
+  UserHome({Key? key, this.a = 0,this.toast = false }) : super(key: key);
 
   @override
   State<UserHome> createState() => _UserHomeState();
@@ -64,9 +67,12 @@ class _UserHomeState extends State<UserHome> {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (index == 0)
+      if (index == 0 && widget.toast) {
         makeToast(msg: 'Bienvenue $NameUser', type: 'info', context: context);
+        widget.toast = false;
+      }
     });
+
 
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
@@ -79,10 +85,10 @@ class _UserHomeState extends State<UserHome> {
         ),
         title: 'DATA SCIENCE PROJECT - UserHome',
         debugShowCheckedModeBanner: false,
-        home: SafeArea(
-          child: Scaffold(
-              body: CustomScrollView(
-            slivers: [
+        home: Scaffold(
+            body: SafeArea(
+              child: CustomScrollView(
+                        slivers: [
               SliverAppBar(
                   expandedHeight: height * 0.1,
                   pinned: true,
@@ -95,9 +101,9 @@ class _UserHomeState extends State<UserHome> {
                     child: ProfileBar(),
                   )),
               SliverList(delegate: SliverChildListDelegate(children())),
-            ],
-          )),
-        ));
+                        ],
+                      ),
+            )));
   }
 
   Widget Body(index, context) {
@@ -110,13 +116,13 @@ class _UserHomeState extends State<UserHome> {
       case 1:
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: width / 8),
-          child: Center(child: MesFormations(context, 1)),
+          child: Center(
+              child: FormationsEnCours(
+            context,
+            key: UniqueKey(),
+          )),
         ); //liste Formations en cours
-      case 2:
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: width / 8),
-          child: Center(child: MesFormations(context, 2)),
-        ); //liste Formations terminées
+
       default:
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: width / 8),
@@ -125,172 +131,6 @@ class _UserHomeState extends State<UserHome> {
     }
   }
 
-  List formations = [];
-  List courses = [];
-
-  Map tabManager = {}; //toujours afficher la 1ere formation
-  String courseKeyToDisplay =
-      "course1"; //on prendra le 1er cours de la premiere formation
-
-  void tabPress(String key, int degree) {
-    if (degree == 0) {
-      //Click sur une formation
-      bool callerState = tabManager[key];
-      setState(() {
-        //On roule toutes les formations ouvertes
-        bool callerState = tabManager[key];
-        print(callerState);
-        tabManager.forEach((key, value) {
-          tabManager[key] = false;
-        });
-        tabManager[key] = callerState == true
-            ? false
-            : true; //On ouvre la formation en question
-        print(tabManager[key]);
-      });
-
-      setState(() {
-        tabManager[key] = callerState == true
-            ? false
-            : true; //On ouvre la formation en question
-        print(key);
-      });
-    }
-
-    if (degree == 1) {
-      //Cas où on clique sur un cours
-      setState(() {
-        courseKeyToDisplay = key;
-      });
-    }
-  }
-
-  Future<List> getMesFormation() async {
-    var response = await CallApi().postData('data', 'formation_user');
-    return json.decode(response.body)['formations'];
-  }
-
-  Widget MesFormations(BuildContext context, int index) {
-    //index permettra de savoir si il s'agit des cours terminé ou pas encore !
-    String MesFormations = index == 1 ? "En cours" : "Terminée";
-
-    // getMesFormation();
-
-    bool isEmpty = true; //pas de formations renvoye
-    //permet de savoir si il y a les cours dans la categorie
-    // C'est à dire : true is il n'y a aucune formation à  afficher, false sinon
-
-    String message; //Message obtenu de la requette
-    message = isEmpty == false
-        ? "Aucune formation $MesFormations "
-        : "Formations $MesFormations";
-
-    if (isEmpty) {
-      return SizedBox(
-        width: width * 7 / 8,
-        height: height * 0.88,
-        child: FutureBuilder<List>(
-            future: getMesFormation(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                formations = snapshot.data!;
-                for (var formation in formations) {
-                  //initialisation du tab manager
-                  tabManager[formation['formation_id']] =
-                      formations.indexOf(formation) == 0 ? true : false;
-
-                  courses.addAll(formation['cours']);
-                }
-                print(tabManager);
-                courseKeyToDisplay = courses[0]['cours_id'];
-                return Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Expanded(
-                        //menu
-                        flex: 1,
-                        child: Container(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              for (int i = 0; i < formations.length; i++)
-                                TabMenu(tab: {
-                                  'key':
-                                      formations[i]['formation_id'].toString(),
-                                  'name': formations[i]['formation'].toString()
-                                }, Items: [
-                                  for (var cours in formations[i]['cours'])
-                                    {
-                                      "key": cours['cours_id'].toString(),
-                                      'name': cours['titre'].toString()
-                                    }
-                                ]).getTab(
-                                  isActive: tabManager[
-                                      formations[i]['formation_id'].toString()],
-                                  pressEvent: tabPress,
-                                ),
-                            ],
-                          ),
-                        )),
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                        color: Colors.white,
-                        child: CourseDisplayer(buildContext: context),
-                      ),
-                    )
-                  ],
-                );
-              } else {
-                return const Center(
-                  child: SpinKitDancingSquare(
-                    color: Colors.blue,
-                    size: 25,
-                  ),
-                );
-              }
-            }),
-      );
-    }
-    //
-    else {
-      //Page vide
-      return Container(
-        //Rien à afficher
-        color: Colors.white,
-        width: width * 7 / 8,
-        height: height * 0.88,
-        child: Text(
-          message,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-              fontSize: 32,
-              color: Colors.black12,
-              backgroundColor: const Color.fromARGB(208, 255, 191, 0)),
-        ),
-      );
-    }
-  }
-
-  Widget CourseDisplayer({required BuildContext buildContext}) {
-    /**
-        * Ici on genere les données de la formation en se basant sur son id(formation_id)
-         */
-
-    var cours;
-    for (var courss in courses) {
-      if (courss['cours_id'] == courseKeyToDisplay) {
-        cours = courss;
-      }
-    }
-
-    return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 5),
-        child: Column(
-          children: [Text("cours['description']")],
-        ));
-  }
 
   Widget Acceuil(BuildContext context) {
     return Center(child: Lister(buildContext: context));
@@ -313,9 +153,11 @@ class _UserHomeState extends State<UserHome> {
             if (snapshot.hasData) {
               var formations = snapshot.data![0]['formations'];
               return GridView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    crossAxisSpacing: 100,
-                    maxCrossAxisExtent: 400,
+                    mainAxisExtent: 500,
+                    maxCrossAxisExtent: 350,
                   ),
                   itemCount: snapshot.data![0]['formations'].length,
                   itemBuilder: (BuildContext ctx, index) {
@@ -328,10 +170,8 @@ class _UserHomeState extends State<UserHome> {
                         .cardview(buildContext);
                   });
             } else {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [CircularProgressIndicator()],
-              );
+               return const Center(child:  SpinKitFoldingCube(color: Colors.lightBlue, size: 100,));
+              
             }
           }),
     );
@@ -352,11 +192,11 @@ class _UserHomeState extends State<UserHome> {
             isActive: index == 1 ? true : false,
             value: 1,
           ),
-          _menuItem(
+          /*_menuItem(
             title: "Terminé",
             isActive: index == 2 ? true : false,
             value: 2,
-          ),
+          ),*/
           SizedBox(
             child: IconButton(
               onPressed: () => {_logout()},

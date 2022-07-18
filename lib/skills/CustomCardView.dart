@@ -17,58 +17,51 @@ class CustomCardView {
       this.title = "",
       this.description = "",
       this.image = ""});
-  Wrap cardview(BuildContext context) {
-    return Wrap(children: [
-      Card(
-        elevation: 10,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+  Widget cardview(BuildContext context) {
+    return Card(
+      elevation: 10,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: Container(
+        color: Colors.white,
+        width: 350,
+        height: 400,
         child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              GestureDetector(
-                child: Center(
-                    child: Column(children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blueAccent),
-                  ),
-                  const SizedBox(height: 3),
-                  Image.network(image,
-                      width: 150, height: 150, fit: BoxFit.fill),
-                  const SizedBox(height: 3),
-                  ElevatedButton(
-                      onPressed: () {
-                        _is_inscrits(context, formation_id);
-                         
-                      }, 
-
-                      child: const Text('Souscrire')),
-                  const Text(
-                    "Description",
-                    style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blueAccent),
-                  ),
-                  const SizedBox(height: 3),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 40),
-                    child: Text(description.substring(
-                        0, description.length < 40 ? description.length : 40)),
-                  ),
-                ])),
-                onTap: () {},
-              )
-            ],
+            child: Column(children: [
+          Text(
+            title,
+            style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent),
           ),
-        ),
+          const SizedBox(height: 3),
+          Image.network(image,
+              width: 150, height: 150, fit: BoxFit.fill),
+          const SizedBox(height: 3),
+          ElevatedButton(
+              onPressed: () {
+                _is_inscrits(context, formation_id);
+                 
+              }, 
+
+              child: const Text('Souscrire')),
+          const Text(
+            "Description",
+            style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Colors.blueAccent),
+          ),
+          const SizedBox(height: 3),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 20, vertical: 40),
+            child: Text(description.substring(
+                0, description.length < 40 ? description.length : 40)),
+          ),
+        ])),
       ),
-    ]);
+    );
   }
 }
  _is_inscrits(context, formation_id) async {

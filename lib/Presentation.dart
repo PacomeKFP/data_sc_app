@@ -7,9 +7,8 @@ import 'package:data_sc_tester/api/CallApi.dart';
 import 'package:data_sc_tester/skills/CoursesTab.dart';
 import 'package:data_sc_tester/skills/ToastWidget.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const PresentAndBuyFormation(
@@ -68,7 +67,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
                   ? 0
                   : (double.parse(course['montant'].toString())));
       });
-      // if (allBuyed) montantTotal *= 0.8;
+      if (allBuyed) montantTotal = 50000;//s'il achete tous on donee à 50k
     });
   }
 
@@ -118,7 +117,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
             body: CustomScrollView(
           slivers: [
             SliverAppBar(
-                backgroundColor: const Color.fromARGB(131, 255, 216, 161),
+                backgroundColor:  Colors.lightBlueAccent,
                 expandedHeight: height * 0.1,
                 pinned: true,
                 floating: true,
@@ -167,8 +166,11 @@ Commencer par les details de la formation même puis passer à ceux des cours   
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const CircularProgressIndicator.adaptive(),
+              children: const [
+                SpinKitFoldingCube(
+                  color: Colors.blue,
+                  size: 100,
+                ),
               ],
             );
           }),
@@ -183,9 +185,10 @@ Commencer par les details de la formation même puis passer à ceux des cours   
           OutlinedButton.icon(
               onPressed: () => _buyCourse(context),
               icon: const Icon(Icons.add_shopping_cart_rounded),
-              label: const Text("Finaliser l'achat !"))
+              label: const Text("Finaliser l'achat !")),
         ],
-      )
+      ),
+      const SizedBox(height: 50)
     ];
   }
 
