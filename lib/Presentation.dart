@@ -67,7 +67,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
                   ? 0
                   : (double.parse(course['montant'].toString())));
       });
-      if (allBuyed) montantTotal = 50000;//s'il achete tous on donee à 50k
+      if (allBuyed) montantTotal = 50000; //s'il achete tous on donee à 50k
     });
   }
 
@@ -117,7 +117,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
             body: CustomScrollView(
           slivers: [
             SliverAppBar(
-                backgroundColor:  Colors.lightBlueAccent,
+                backgroundColor: Colors.lightBlueAccent,
                 expandedHeight: height * 0.1,
                 pinned: true,
                 floating: true,
