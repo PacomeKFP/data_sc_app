@@ -37,7 +37,8 @@ List<Map> DATA = [
     "image": "../../assets/images/3.jpg",
   }
 ];
-
+//Cette page ne fonctionne pas !
+//Elle n'est pas utilisée dans lma construction de l'application en tant qu'interface
 class _GetStartedState extends State<GetStarted> {
   var page = 0;
   var maxPage = 3;
@@ -53,7 +54,7 @@ class _GetStartedState extends State<GetStarted> {
           Theme.of(context).textTheme,
         ),
       ),
-      title: 'Bienvenue !',
+      title: 'Data Clevers ',
       home: Scaffold(
         body: CustomScrollView(
       slivers: [
@@ -90,6 +91,7 @@ class _GetStartedState extends State<GetStarted> {
       children: [
         for (Map data in DATA)
           CustomCardView(
+            completed : false,
             formation: data,
                   formation_id: 'ML01',
                   title: data["title"],
@@ -98,6 +100,7 @@ class _GetStartedState extends State<GetStarted> {
               .cardview(buildContext),
         for (Map data in DATA)
           CustomCardView(
+            completed : false,
             formation: data,
                   formation_id: 'ML01',
                   title: data["title"],
@@ -106,6 +109,7 @@ class _GetStartedState extends State<GetStarted> {
               .cardview(buildContext),
         for (Map data in DATA)
           CustomCardView(
+            completed : false,
             formation: data,
                   formation_id: 'ML01',
                   title: data["title"],

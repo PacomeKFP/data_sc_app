@@ -1,6 +1,5 @@
-import 'dart:ui';
+// ignore_for_file: file_names
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -20,8 +19,8 @@ void configureToast(String type) {
       break;
 
     case 'debug':
-      props['color'] = Color.fromARGB(178, 178, 255, 89);
-      props['icon'] = SpinKitCircle(color: Colors.white,);
+      props['color'] = const Color.fromARGB(178, 178, 255, 89);
+      props['icon'] = const SpinKitCircle(color: Colors.white,);
       break;
 
     default:
@@ -30,6 +29,7 @@ void configureToast(String type) {
 
 void makeToast(
     {required String msg,
+    int duration = 5,
     ToastGravity position = ToastGravity.TOP,
     double fSize = 24,
     String type = "info",
@@ -58,6 +58,6 @@ void makeToast(
   fToast.removeCustomToast();
   fToast.showToast(
     child: toast,
-    toastDuration: const Duration(seconds: 5),
+    toastDuration: Duration(seconds: duration),
   );
 }

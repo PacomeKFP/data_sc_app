@@ -20,7 +20,7 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   var token = prefs.getString('token');
   print(token);
-  runApp(MaterialApp(home: redirectAuth(token)));
+  runApp(MaterialApp(title:'Data Clevers' ,home: redirectAuth(token)));
 }
 
 redirectAuth(token) {
@@ -63,7 +63,7 @@ class MyAppState extends State<MyApp> {
           Theme.of(context).textTheme,
         ),
       ),
-      title: 'Flutter Login Web',
+      title: 'Data Clevers',
       home: const Scaffold(
         backgroundColor: Color(0xFFf5f5f5),
         body: MyAppView(),

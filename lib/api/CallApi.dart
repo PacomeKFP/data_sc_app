@@ -1,7 +1,6 @@
+    // ignore_for_file: non_constant_identifier_names
+
     import 'dart:convert';
-    import 'dart:html';
-    import 'package:dio/dio.dart';
-    import 'package:dio_cookie_manager/dio_cookie_manager.dart';
     import 'package:http/http.dart' as http;
     import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,7 +8,7 @@
     final String baseUrl = "http://elearning.togettechinov.com/datapp/public/";
 
     AuthenticateUser(data) async {
-        var fullUrl = baseUrl + 'login' ;
+        var fullUrl = '${baseUrl}login' ;
         final prefs = await SharedPreferences.getInstance();
         var T = prefs.getString('token');
         return await http.post(Uri.parse(fullUrl),
@@ -18,7 +17,7 @@
             );
     }
     UnAuthenticateUser() async {
-        var fullUrl = baseUrl + 'logout?' ;
+        var fullUrl = '${baseUrl}logout?' ;
         final prefs = await SharedPreferences.getInstance();
         var T = prefs.getString('token');
         print(_setHeaders(T));
@@ -52,9 +51,4 @@
                 "Authorization": "Bearer $token",
         };
 
-    _getToken() async {
-        SharedPreferences localStorage = await SharedPreferences.getInstance();
-        var token = localStorage.getString('token');
-        return token;
-    }
     }

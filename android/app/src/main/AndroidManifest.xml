@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.data_sc_tester">
    <application
-        android:label="data_sc_tester"
+        android:label="Data Clevers"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -111,7 +111,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
             Theme.of(context).textTheme,
           ),
         ),
-        title: 'TRAINING PRESENTATION',
+        title: "DC - ${widget.formation['formation']}",
         debugShowCheckedModeBanner: false,
         home: Scaffold(
             body: CustomScrollView(

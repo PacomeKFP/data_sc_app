@@ -7,10 +7,8 @@ import 'package:data_sc_tester/api/CallApi.dart';
 import 'package:data_sc_tester/skills/CustomCardView.dart';
 import 'package:data_sc_tester/skills/HomeFunctions.dart';
 import 'package:data_sc_tester/skills/HomeUserWidgets.dart';
-import 'package:data_sc_tester/skills/TabMenu.dart';
 import 'package:data_sc_tester/skills/ToastWidget.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,13 +16,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'main.dart';
 
 void main() {
-  runApp( UserHome());
+  runApp(UserHome());
 }
 
 class UserHome extends StatefulWidget {
   final int a;
   bool toast;
-  UserHome({Key? key, this.a = 0,this.toast = false }) : super(key: key);
+  UserHome({Key? key, this.a = 0, this.toast = false}) : super(key: key);
 
   @override
   State<UserHome> createState() => _UserHomeState();
@@ -73,7 +71,6 @@ class _UserHomeState extends State<UserHome> {
       }
     });
 
-
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
 
@@ -83,12 +80,12 @@ class _UserHomeState extends State<UserHome> {
             Theme.of(context).textTheme,
           ),
         ),
-        title: 'DATA SCIENCE PROJECT - UserHome',
+        title: '$NameUser - DataClevers',
         debugShowCheckedModeBanner: false,
         home: Scaffold(
             body: SafeArea(
-              child: CustomScrollView(
-                        slivers: [
+          child: CustomScrollView(
+            slivers: [
               SliverAppBar(
                   expandedHeight: height * 0.1,
                   pinned: true,
@@ -101,9 +98,9 @@ class _UserHomeState extends State<UserHome> {
                     child: ProfileBar(),
                   )),
               SliverList(delegate: SliverChildListDelegate(children())),
-                        ],
-                      ),
-            )));
+            ],
+          ),
+        )));
   }
 
   Widget Body(index, context) {
@@ -131,7 +128,6 @@ class _UserHomeState extends State<UserHome> {
     }
   }
 
-
   Widget Acceuil(BuildContext context) {
     return Center(child: Lister(buildContext: context));
   }
@@ -153,15 +149,16 @@ class _UserHomeState extends State<UserHome> {
             if (snapshot.hasData) {
               var formations = snapshot.data![0]['formations'];
               return GridView.builder(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
                   gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    mainAxisExtent: 500,
-                    maxCrossAxisExtent: 350,
+                    mainAxisExtent: 650,
+                    maxCrossAxisExtent: 380,
                   ),
                   itemCount: snapshot.data![0]['formations'].length,
                   itemBuilder: (BuildContext ctx, index) {
                     return CustomCardView(
+                            completed: true,//il faudra changer ceci
                             formation: formations[index],
                             formation_id: formations[index]["formation_id"],
                             title: formations[index]["titre"],
@@ -170,8 +167,11 @@ class _UserHomeState extends State<UserHome> {
                         .cardview(buildContext);
                   });
             } else {
-               return const Center(child:  SpinKitFoldingCube(color: Colors.lightBlue, size: 100,));
-              
+              return const Center(
+                  child: SpinKitFoldingCube(
+                color: Colors.lightBlue,
+                size: 100,
+              ));
             }
           }),
     );

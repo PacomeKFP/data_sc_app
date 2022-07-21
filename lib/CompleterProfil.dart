@@ -1,6 +1,6 @@
-import 'dart:convert';
+// ignore_for_file: must_be_immutable, no_leading_underscores_for_local_identifiers, non_constant_identifier_names, unused_local_variable
 
-import 'package:data_sc_tester/GetStarted.dart';
+import 'dart:convert';
 import 'package:data_sc_tester/skills/ToastWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,7 +10,7 @@ import 'skills/TextField.dart';
 import 'UserPage.dart';
 
 void main() {
-  runApp(InscriptionPage());
+  runApp(const InscriptionPage());
 }
 
 class InscriptionPage extends StatelessWidget {
@@ -29,8 +29,8 @@ class InscriptionPage extends StatelessWidget {
         type: "info",
         context: context));
 
-    return MaterialApp(
-      title: 'Completez votre profil',
+    return const MaterialApp(
+      title: 'DC - Profil',
       home: LoginPage(),
       debugShowCheckedModeBanner: false,
     );
@@ -38,14 +38,16 @@ class InscriptionPage extends StatelessWidget {
 }
 
 class LoginPage extends StatelessWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFf5f5f5),
+      backgroundColor: const Color(0xFFf5f5f5),
       body: ListView(
         padding: EdgeInsets.symmetric(
             horizontal: MediaQuery.of(context).size.width / 8),
-        children: [Head(), Body()],
+        children: [Head(), const Body()],
       ),
     );
   }
@@ -62,7 +64,7 @@ class Head extends StatelessWidget {
         padding: EdgeInsets.symmetric(
             vertical: MediaQuery.of(context).size.height / 10),
         child:
-            Text("Aidez $name à vous aidez :", style: TextStyle(fontSize: 40)));
+            Text("Aidez $name à vous aidez :", style: const TextStyle(fontSize: 40)));
   }
 }
 
@@ -89,6 +91,9 @@ void dispose(Map<String, TextEditingController> map) {
 //=====================================================================
 
 class Body extends StatelessWidget {
+  const Body({Key? key}) : super(key: key);
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -134,15 +139,16 @@ class Body extends StatelessWidget {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => UserHome()));
               },
-              child: Text("Sauter"),
+              child: const Text("Sauter"),
             )),
 //========================Boutton Sautter FIN=====================
-            Container(width: 20, height: 20),
+            const SizedBox(width: 20, height: 20),
 
 //=========================Boutton CONTINUER=====================
 
             ElevatedButton(
               onPressed: () {
+                // ignore: todo
                 //TODO: collecter  en envoyer les informations
                 var data = {};
                 _profilControllers.forEach((key, value) {
@@ -220,8 +226,8 @@ Widget _voletInscription({
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(title, style: TextStyle(fontSize: 20)),
-      SizedBox(height: 15),
+      Text(title, style: const TextStyle(fontSize: 20)),
+      const SizedBox(height: 15),
       Wrap(
         spacing: 2.0,
         runSpacing: 10.0,
