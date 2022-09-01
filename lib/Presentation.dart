@@ -77,7 +77,7 @@ class _PresentAndBuyFormationState extends State<PresentAndBuyFormation> {
     var response = await CallApi()
         .postData(data, 'formation/${widget.formation_id}/cours');
 
-    // print(response.body['message']);
+    print(response.body['message']);
 
     updateMontantTotal();
 

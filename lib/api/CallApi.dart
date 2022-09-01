@@ -5,7 +5,7 @@
     import 'package:shared_preferences/shared_preferences.dart';
 
     class CallApi {
-    final String baseUrl = "http://elearning.togettechinov.com/datapp/public/";
+    final String baseUrl = "https://elearning.togettechinov.com/datapp/public/";
 
     AuthenticateUser(data) async {
         var fullUrl = '${baseUrl}login' ;
@@ -49,6 +49,8 @@
                 'Content-type': 'application/json',
                 'Accept': 'application/json',
                 "Authorization": "Bearer $token",
+                "Access-Control-Allow-Origin":"*",
+                "Access-Control-Allow-Methods": "*",
         };
 
     }

@@ -158,7 +158,7 @@ class _UserHomeState extends State<UserHome> {
                   itemCount: snapshot.data![0]['formations'].length,
                   itemBuilder: (BuildContext ctx, index) {
                     return CustomCardView(
-                            completed: true,//il faudra changer ceci
+                            completed: formations[index]['inscrit'] ?? false,//il faudra changer ceci
                             formation: formations[index],
                             formation_id: formations[index]["formation_id"],
                             title: formations[index]["titre"],
@@ -348,7 +348,7 @@ class _UserHomeState extends State<UserHome> {
 
   Future<List> _all_formations() async {
     var res = await CallApi().getData('get-all-formations');
-    // print(json.decode(res.body));
+    print(json.decode(res.body));
     if (res.statusCode == 200) {
       return [json.decode(res.body)];
     } else {
